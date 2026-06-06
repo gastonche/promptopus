@@ -1,0 +1,69 @@
+export const EXAMPLE_SUITE_FILENAME = 'promptopus.suite.yaml';
+
+export const EXAMPLE_SUITE_YAML = `# Promptopus example suite — edit me, then run:  promptopus run ${EXAMPLE_SUITE_FILENAME}
+# Docs: every field below is validated; break something and you'll get a friendly error.
+name: Capital Cities (example)
+description: A tiny starter suite showing all three grader families.
+
+# Judge model used by the LLM-as-judge graders (judge-faithfulness / judge-quality).
+judge:
+  provider: anthropic
+  model: claude-3-5-sonnet-latest
+
+# Models to compare. Each provider's API key is read from an env var (apiKeyEnv,
+# or the per-vendor default). Never put secrets in this file.
+providers:
+  - name: gpt4o-mini
+    kind: openai
+    model: gpt-4o-mini
+  - name: haiku
+    kind: anthropic
+    model: claude-3-5-haiku-latest
+  # OpenAI-compatible endpoint (e.g. a local server or Cloudflare Workers AI).
+  - name: llama-8b
+    kind: openai-compat
+    model: "@cf/meta/llama-3.1-8b-instruct"
+    baseUrlEnv: CF_AI_BASE_URL
+    apiKeyEnv: CLOUDFLARE_API_TOKEN
+
+# Graders applied to every case unless a case overrides them.
+defaults:
+  maxTokens: 256
+  graders:
+    - type: non-empty                 # deterministic: output isn't blank
+    - type: max-length                # deterministic: stays under a length cap
+      chars: 300
+    - type: judge-quality             # LLM-as-judge: is it a good answer?
+      threshold: 0.7
+    - type: latency-budget            # benchmark: flag slow calls
+      p95Ms: 6000
+
+cases:
+  - id: capital-france
+    prompt: "What is the capital of {{country}}? Answer in one short sentence."
+    vars:
+      country: France
+    reference: Paris
+    graders:
+      - type: contains                # deterministic: must mention the answer
+        value: Paris
+        caseInsensitive: true
+      - type: non-empty
+      - type: max-length
+        chars: 300
+      - type: judge-quality
+        threshold: 0.7
+
+  - id: capital-japan
+    prompt: "What is the capital of {{country}}? Answer in one short sentence."
+    vars:
+      country: Japan
+    reference: Tokyo
+    graders:
+      - type: contains
+        value: Tokyo
+        caseInsensitive: true
+      - type: non-empty
+      - type: latency-budget
+        p95Ms: 6000
+`;
