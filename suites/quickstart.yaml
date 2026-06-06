@@ -1,0 +1,40 @@
+name: Quickstart (mock, zero keys)
+description: Runs with no API keys using the built-in mock provider — deterministic graders only.
+
+providers:
+  - name: mock-a
+    kind: mock
+    model: mock-fast
+  - name: mock-b
+    kind: mock
+    model: mock-verbose
+    text: "Paris is the capital of France. It sits on the Seine."
+
+defaults:
+  graders:
+    - type: non-empty
+
+cases:
+  - id: mentions-paris
+    prompt: "The capital of France is Paris."
+    graders:
+      - type: non-empty
+      - type: contains
+        value: Paris
+        caseInsensitive: true
+      - type: max-length
+        chars: 60
+
+  - id: length-cap
+    prompt: "This sentence is intentionally longer than the strict cap so one provider trips the max-length grader and the table shows a failure."
+    graders:
+      - type: non-empty
+      - type: max-length
+        chars: 40
+
+  - id: looks-like-json
+    prompt: '{"answer": "Tokyo"}'
+    graders:
+      - type: is-valid-json
+      - type: regex
+        pattern: "Tokyo"
