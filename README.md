@@ -1,0 +1,243 @@
+<p align="center">
+  <img src="brand/logo.svg" alt="Promptopus" width="420" />
+</p>
+
+<p align="center">
+  <b>A config-driven LLM evaluation harness — CLI + dashboard.</b><br/>
+  Define an eval in YAML, run it against many models, score every output with three grader
+  families, and compare models side by side.
+</p>
+
+<p align="center">
+  TypeScript (strict, no <code>any</code> in core) · zod-validated configs · 48 unit tests · pluggable providers &amp; graders
+</p>
+
+---
+
+## Why Promptopus
+
+Shipping an LLM feature means answering "which model, at what cost, at what quality?" — and
+re-answering it every time a model version changes. Promptopus makes that a repeatable, version-controlled
+experiment: one YAML file defines your test cases, the models to compare, and how to grade them; one
+command runs the matrix and writes a machine-readable report; a dashboard turns that report into a
+side-by-side comparison you can actually reason about.
+
+The two interfaces — **`Provider`** and **`Grader`** — *are* the architecture. Adding a model vendor
+or a scoring strategy means implementing one interface and registering it; nothing else changes.
+
+## Features
+
+- **Three grader families, one interface** — deterministic assertions, LLM-as-judge, and cost/latency
+  benchmarking all implement the same `Grader`.
+- **Pluggable providers** — OpenAI, Anthropic, and any OpenAI-compatible endpoint (local servers,
+  Cloudflare Workers AI), plus a keyless `mock` provider for zero-cost testing.
+- **Cost & latency are first-class** — tokens, computed USD, and p50/p95 latency flow into the report
+  as primary metrics, not afterthoughts.
+- **Resilient runs** — rate-limit-aware retry/backoff (honors `Retry-After`), concurrency control, and
+  per-cell error capture: a failed case is recorded and the run continues.
+- **Friendly configs** — every suite is zod-validated; invalid configs fail with precise, path-pointed
+  messages, never a stack trace.
+- **A real dashboard** — Vite + React + Tailwind, static (reads a JSON report), with a comparison
+  matrix and per-case drill-down.
+
+## Dashboard
+
+![Promptopus dashboard](docs/dashboard-screenshot.png)
+
+## Quick start
+
+```bash
+npm install
+npm run build
+
+# scaffold an example suite
+node packages/core/dist/cli/index.js init           # writes promptopus.suite.yaml
+
+# run it (no keys needed — the example includes a mock provider path)
+node packages/core/dist/cli/index.js run suites/quickstart.yaml --out results.json
+
+# open the dashboard against a report
+node packages/core/dist/cli/index.js view results.json
+```
+
+> Installed as a bin, these are just `promptopus run …` / `pop run …`. Provider keys are read from the
+> environment (auto-loaded from `.env`); see [`.env.example`](.env.example).
+
+A run prints a live progress view and a summary table:
+
+```
+🐙 Promptopus — ReadAloud TL;DR Summarizer
+  5 cases × 2 providers, concurrency 3
+
+  [1/10] ✓ eiffel-tower × gpt-4o-mini
+  ...
+Metric                 gpt-4o-mini  llama-8b
+---------------------  -----------  --------
+Pass rate              100%         100%
+Score · judge          0.96         0.99
+Cost · total           $0.0005      $0.0002
+Latency · p95          2436ms       6880ms
+```
+
+## Architecture
+
+```mermaid
+flowchart LR
+  YAML["suite.yaml"] -->|"zod validate + resolve"| SUITE["EvalSuite<br/>(typed)"]
+  SUITE --> RUNNER["Runner<br/>case × provider matrix<br/>concurrency · retry/backoff"]
+
+  RUNNER -->|"generate(prompt)"| PROV
+  PROV -->|"GenerateResult<br/>text · tokens · latency · cost"| RUNNER
+  RUNNER -->|"grade(ctx)"| GRAD
+  GRAD -->|"GraderResult<br/>score · passed · detail"| RUNNER
+
+  RUNNER --> REPORT["Report (JSON)<br/>pass rate · mean score/family<br/>cost · p50/p95 · raw cells"]
+  REPORT --> TABLE["CLI summary table"]
+  REPORT --> DASH["Dashboard<br/>matrix + drill-down"]
+
+  subgraph PROV["Provider (interface)"]
+    direction TB
+    P1["openai"] ~~~ P2["anthropic"] ~~~ P3["openai-compat<br/>(Workers AI / local)"] ~~~ P4["mock"]
+  end
+
+  subgraph GRAD["Grader (interface)"]
+    direction TB
+    G1["deterministic<br/>equals · contains · regex<br/>json-schema · max-length"] ~~~ G2["judge<br/>faithfulness · quality"] ~~~ G3["benchmark<br/>latency · cost budgets"]
+  end
+```
+
+**Data model** (`packages/core/src/domain/`):
+
+- **`Provider`** — `{ name, model, generate(prompt, opts) → GenerateResult }`; `GenerateResult` carries
+  `text`, `tokensIn/Out`, `latencyMs`, and `costUsd` (computed from a per-model pricing table).
+- **`Grader`** — `grade(ctx) → { score 0–1, passed, detail }`; one interface for all three families.
+- **`TestCase` / `EvalSuite`** — the resolved, runnable suite (prompts interpolated, graders merged).
+- **`RunResult`** — one cell of the matrix; **`Report`** — the aggregate JSON artifact the dashboard reads.
+
+## The three grader families (and when each matters)
+
+| Family | Examples | Cost | Use it when… |
+| --- | --- | --- | --- |
+| **Deterministic** | `equals`, `contains`, `regex`, `is-valid-json`, `json-schema`, `max-length`, `non-empty` | free, instant | the output has a checkable contract — valid JSON, contains a required string, under a length cap, plain prose. Catch regressions that don't need a model to spot. |
+| **LLM-as-judge** | `judge-faithfulness`, `judge-quality` | a judge API call per check | quality is subjective — is the summary faithful to the source? is the answer good? The judge model returns a structured, validated score; judge failures degrade gracefully to a failing result. |
+| **Cost + latency** | `latency-budget`, `cost-budget` | free (uses captured metrics) | you have an SLA or a budget. These grade the metrics every call already produces, and the report aggregates p50/p95 and totals across the suite. |
+
+Most real suites combine all three: deterministic gates for structure, judges for quality, budgets for
+the economics.
+
+## Dogfood: the ReadAloud summarizer eval
+
+Promptopus evaluates the **TL;DR summarization** feature of [ReadAloud](https://github.com/) — using
+its *exact* production prompt and constraints — to answer a real product question: **is the cheap open
+8B model ReadAloud ships as good as a frontier small model?**
+
+Comparing **Llama-3.1-8B (Cloudflare Workers AI)** vs **gpt-4o-mini (OpenAI)**, judged by `gpt-4o`:
+
+| Metric | gpt-4o-mini | llama-3.1-8b |
+| --- | --- | --- |
+| Faithfulness (judge) | 0.96 | **1.00** |
+| Quality (judge) | 0.96 | **0.99** |
+| Total cost (5 cases) | $0.00048 | **$0.00024** |
+| Latency p95 | **2436 ms** | 6880 ms |
+
+**The open 8B model matched — even edged — the frontier model on quality and faithfulness at half the
+cost; the only tradeoff is ~2.8× higher latency.** ReadAloud's production choice is well-justified.
+
+→ Full writeup, per-case breakdown, and honest caveats: **[docs/readaloud-eval.md](docs/readaloud-eval.md)**.
+
+## Adding a provider
+
+Implement `Provider`, then register a factory. That's the whole contract.
+
+```ts
+// packages/core/src/providers/cohere.ts
+import type { GenerateResult, Provider } from '../domain/provider.js';
+import { computeCostUsd } from './pricing.js';
+
+export class CohereProvider implements Provider {
+  constructor(readonly name: string, readonly model: string, private apiKey: string) {}
+  async generate(prompt: string): Promise<GenerateResult> {
+    const start = performance.now();
+    // ...call the API, read usage...
+    return { text, tokensIn, tokensOut, latencyMs: Math.round(performance.now() - start),
+             costUsd: computeCostUsd(this.model, tokensIn, tokensOut) };
+  }
+}
+```
+
+Then add a `kind` to the zod union in `config/schema.ts`, one `case` in `providers/registry.ts`, and a
+pricing row in `providers/pricing.ts`. The runner, report, and dashboard need no changes.
+
+## Adding a grader
+
+Implement `Grader` (sync or async), then register it.
+
+```ts
+// packages/core/src/graders/deterministic/word-count.ts
+import type { Grader } from '../../domain/grader.js';
+
+export function wordCountGrader(spec: { max: number }): Grader {
+  return {
+    id: `word-count(${spec.max})`,
+    family: 'deterministic',
+    grade({ output }) {
+      const n = output.text.trim().split(/\s+/).length;
+      return { graderId: `word-count(${spec.max})`, family: 'deterministic',
+               score: n <= spec.max ? 1 : 0, passed: n <= spec.max, detail: `${n}/${spec.max} words` };
+    },
+  };
+}
+```
+
+Add a variant to the `GraderSpecSchema` union and one `case` in `graders/registry.ts`. Done.
+
+## CLI reference
+
+| Command | What it does |
+| --- | --- |
+| `promptopus init [file]` | Scaffold an example suite (`--stdout`, `--force`). |
+| `promptopus run <suite> [opts]` | Run the suite, write the JSON report, print the summary table. |
+| `promptopus view [results.json]` | Serve the dashboard against a report (`--port`, `--no-open`). |
+
+`run` options: `--out <file>`, `--providers a,b` (subset), `--max-concurrency <n>`, `--retries <n>`.
+
+## Known limitations
+
+- **Judge cost isn't folded into per-provider cost.** Judge calls have their own cost; the report's cost
+  metrics reflect the *candidate* model only. (Judge spend is intentionally separate from candidate spend.)
+- **`json-schema` grader supports a common subset** (type, required, properties, items, enum, min/max) —
+  not the full JSON Schema spec. Swap in Ajv if you need it.
+- **No response caching yet** — identical (prompt, model) pairs re-call the API across runs.
+- **LLM-as-judge is only as good as the judge.** Saturating rubrics and self-judging bias are real; see the
+  dogfood caveats. Treat judge scores as directional, not absolute.
+
+## What I'd do at scale
+
+- **Caching** — content-addressed cache keyed on `(provider, model, prompt, params)` so re-runs and CI are
+  near-free; a `--no-cache` escape hatch.
+- **Dataset versioning** — hash the suite + sources so reports are tied to an exact dataset version, and
+  diffs are meaningful.
+- **CI integration** — `promptopus run` with a `--fail-on` threshold (pass rate / regression delta) as a
+  required check; upload the report as a build artifact.
+- **Regression tracking across model versions** — store reports over time and chart pass-rate / cost /
+  faithfulness as providers ship new model snapshots, so a silent quality drop is caught.
+- **Judge robustness** — pairwise comparison instead of absolute scoring, multiple judges with agreement
+  thresholds, and a held-out human-labeled set to calibrate the judge.
+
+## Development
+
+```bash
+npm install
+npm run build        # turbo: builds @promptopus/core then the dashboard
+npm run typecheck    # strict TS across the monorepo
+npm test             # vitest (core)
+npm run dev --workspace @promptopus/dashboard   # dashboard dev server
+```
+
+Repo layout: `packages/core` (domain · config · providers · graders · runner · CLI), `apps/dashboard`
+(Vite/React/Tailwind), `suites/` (eval definitions), `docs/` (findings + screenshot), `brand/` (logo +
+palette). See **[CONTRIBUTING.md](CONTRIBUTING.md)** for setup and conventions.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
