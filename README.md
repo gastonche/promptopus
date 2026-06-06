@@ -235,8 +235,13 @@ npm run dev --workspace @promptopus/dashboard   # dashboard dev server
 ```
 
 Repo layout: `packages/core` (domain · config · providers · graders · runner · CLI), `apps/dashboard`
-(Vite/React/Tailwind), `suites/` (eval definitions), `docs/` (findings + screenshot), `brand/` (logo +
-palette). See **[CONTRIBUTING.md](CONTRIBUTING.md)** for setup and conventions.
+(Vite/React/Tailwind report viewer), `apps/web` (Astro marketing site + documentation), `suites/`
+(eval definitions), `docs/` (findings + screenshot), `brand/` (logo + palette). See
+**[CONTRIBUTING.md](CONTRIBUTING.md)** for setup and conventions.
+
+```bash
+npm run dev --workspace @promptopus/web   # landing page + docs (Astro)
+```
 
 ## License
 

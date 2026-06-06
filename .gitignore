@@ -4,6 +4,7 @@ node_modules/
 # Build output
 dist/
 .turbo/
+.astro/
 
 # Env / secrets — never commit real keys
 .env

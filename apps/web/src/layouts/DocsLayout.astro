@@ -1,0 +1,142 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { getDocsNav, getFlatDocs } from '../lib/nav';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+interface Props {
+  title: string;
+  description?: string;
+  slug: string;
+  headings: Heading[];
+}
+const { title, description, slug, headings } = Astro.props;
+
+const nav = await getDocsNav();
+const flat = await getFlatDocs();
+const idx = flat.findIndex((d) => d.slug === slug);
+const prev = idx > 0 ? flat[idx - 1] : null;
+const next = idx >= 0 && idx < flat.length - 1 ? flat[idx + 1] : null;
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+<BaseLayout title={`${title} · Promptopus docs`} description={description} footer={false}>
+  <div class="mx-auto max-w-7xl px-5">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-[15rem_1fr] xl:grid-cols-[15rem_1fr_13rem]">
+      <!-- Sidebar -->
+      <aside class="hidden lg:block">
+        <nav class="sticky top-16 max-h-[calc(100dvh-4rem)] overflow-y-auto py-8 pr-3 text-sm">
+          {
+            nav.map((section) => (
+              <div class="mb-6">
+                <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-ink/40">
+                  {section.section}
+                </p>
+                <ul class="space-y-0.5">
+                  {section.items.map((item) => (
+                    <li>
+                      <a
+                        href={`/docs/${item.slug}`}
+                        class={`block rounded-lg px-3 py-1.5 transition ${item.slug === slug ? 'bg-pop-600/10 font-semibold text-pop-700' : 'text-ink/60 hover:bg-pop-600/5 hover:text-ink'}`}
+                      >
+                        {item.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </nav>
+      </aside>
+
+      <!-- Content -->
+      <article class="min-w-0 py-8">
+        <!-- Mobile nav -->
+        <details class="mb-6 rounded-xl border border-pop-300/50 bg-white lg:hidden">
+          <summary class="cursor-pointer px-4 py-3 text-sm font-semibold text-pop-700">
+            Documentation menu
+          </summary>
+          <div class="border-t border-pop-300/40 px-4 py-3 text-sm">
+            {
+              nav.map((section) => (
+                <div class="mb-3">
+                  <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/40">
+                    {section.section}
+                  </p>
+                  <ul class="space-y-0.5">
+                    {section.items.map((item) => (
+                      <li>
+                        <a href={`/docs/${item.slug}`} class="block py-1 text-ink/70">
+                          {item.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            }
+          </div>
+        </details>
+
+        <div class="prose max-w-none">
+          <h1>{title}</h1>
+          {description && <p class="text-lg text-ink/55">{description}</p>}
+          <slot />
+        </div>
+
+        <nav class="mt-14 grid gap-4 border-t border-pop-300/40 pt-6 sm:grid-cols-2">
+          {
+            prev ? (
+              <a
+                href={`/docs/${prev.slug}`}
+                class="rounded-xl border border-pop-300/50 px-4 py-3 transition hover:border-pop-500"
+              >
+                <span class="text-xs text-ink/40">← Previous</span>
+                <span class="block font-semibold text-pop-700">{prev.title}</span>
+              </a>
+            ) : (
+              <span />
+            )
+          }
+          {
+            next && (
+              <a
+                href={`/docs/${next.slug}`}
+                class="rounded-xl border border-pop-300/50 px-4 py-3 text-right transition hover:border-pop-500 sm:col-start-2"
+              >
+                <span class="text-xs text-ink/40">Next →</span>
+                <span class="block font-semibold text-pop-700">{next.title}</span>
+              </a>
+            )
+          }
+        </nav>
+      </article>
+
+      <!-- TOC -->
+      <aside class="hidden xl:block">
+        {
+          toc.length > 0 && (
+            <nav class="sticky top-16 py-8 text-sm">
+              <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-ink/40">
+                On this page
+              </p>
+              <ul class="space-y-1.5">
+                {toc.map((h) => (
+                  <li class={h.depth === 3 ? 'pl-3' : ''}>
+                    <a href={`#${h.slug}`} class="block text-ink/55 transition hover:text-pop-700">
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )
+        }
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,51 @@
+---
+import Octopus from './Octopus.astro';
+---
+
+<footer class="border-t border-pop-300/40 bg-white">
+  <div class="mx-auto grid max-w-7xl gap-8 px-5 py-12 sm:grid-cols-2 md:grid-cols-4">
+    <div class="sm:col-span-2 md:col-span-1">
+      <a href="/" class="flex items-center gap-2 font-bold">
+        <Octopus size={28} />
+        <span><span class="text-pop-700">Prompt</span><span class="text-pop-500">opus</span></span>
+      </a>
+      <p class="mt-3 max-w-xs text-sm text-ink/55">
+        A config-driven LLM evaluation harness. Define an eval in YAML, run it, compare models.
+      </p>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-semibold uppercase tracking-wide text-ink/40">Docs</h3>
+      <ul class="mt-3 space-y-2 text-sm text-ink/70">
+        <li><a class="hover:text-pop-700" href="/docs/introduction">Introduction</a></li>
+        <li><a class="hover:text-pop-700" href="/docs/getting-started">Getting started</a></li>
+        <li><a class="hover:text-pop-700" href="/docs/configuration">Configuration</a></li>
+        <li><a class="hover:text-pop-700" href="/docs/cli">CLI reference</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-semibold uppercase tracking-wide text-ink/40">Concepts</h3>
+      <ul class="mt-3 space-y-2 text-sm text-ink/70">
+        <li><a class="hover:text-pop-700" href="/docs/graders">Graders</a></li>
+        <li><a class="hover:text-pop-700" href="/docs/providers">Providers</a></li>
+        <li><a class="hover:text-pop-700" href="/docs/llm-judge">LLM-as-judge</a></li>
+        <li><a class="hover:text-pop-700" href="/docs/dashboard">Dashboard</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-semibold uppercase tracking-wide text-ink/40">Project</h3>
+      <ul class="mt-3 space-y-2 text-sm text-ink/70">
+        <li><a class="hover:text-pop-700" href="https://github.com/">GitHub</a></li>
+        <li><a class="hover:text-pop-700" href="/docs/extending">Extending</a></li>
+        <li><a class="hover:text-pop-700" href="/docs/whats-next">At scale</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-pop-300/40">
+    <div class="mx-auto max-w-7xl px-5 py-4 text-xs text-ink/45">
+      MIT licensed · Built with TypeScript, Astro &amp; Tailwind · © 2026 Promptopus
+    </div>
+  </div>
+</footer>

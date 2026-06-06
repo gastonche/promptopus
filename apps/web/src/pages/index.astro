@@ -1,0 +1,371 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CodeWindow from '../components/CodeWindow.astro';
+
+const families = [
+  {
+    name: 'Deterministic asserts',
+    tag: 'free · instant',
+    desc: 'equals, contains, regex, is-valid-json, json-schema, max-length, non-empty. Catch contract regressions without spending a token.',
+    accent: 'text-pop-700 bg-pop-600/10',
+  },
+  {
+    name: 'LLM-as-judge',
+    tag: 'faithfulness · quality',
+    desc: 'Send the output (and source) to a judge model with a rubric. Structured, zod-validated scores; judge failures degrade gracefully.',
+    accent: 'text-pop-600 bg-pop-500/15',
+  },
+  {
+    name: 'Cost + latency',
+    tag: 'budgets · p50/p95',
+    desc: 'Tokens, computed USD, and latency are first-class. Set per-call budgets and roll up p50/p95 across the whole suite.',
+    accent: 'text-warn bg-warn/10',
+  },
+];
+
+const features = [
+  {
+    title: 'Pluggable providers',
+    body: 'OpenAI, Anthropic, any OpenAI-compatible endpoint (local or Cloudflare Workers AI), plus a keyless mock. One interface to add more.',
+    icon: 'plug',
+  },
+  {
+    title: 'Resilient runs',
+    body: 'Rate-limit-aware retry/backoff that honors Retry-After, concurrency control, and per-cell error capture. A failed case never crashes the run.',
+    icon: 'shield',
+  },
+  {
+    title: 'Friendly configs',
+    body: 'Every suite is zod-validated. Invalid configs fail with precise, path-pointed messages — never a stack trace.',
+    icon: 'check',
+  },
+  {
+    title: 'A real dashboard',
+    body: 'A static React dashboard reads the JSON report: comparison matrix with best/worst highlighting and per-case drill-down.',
+    icon: 'chart',
+  },
+  {
+    title: 'Machine-readable report',
+    body: 'Every run writes one JSON artifact — pass rates, mean score per family, cost, p50/p95, and every raw cell — ready for CI and diffs.',
+    icon: 'doc',
+  },
+  {
+    title: 'Strict TypeScript',
+    body: 'No any in core logic. The Provider and Grader interfaces are the architecture; add one by implementing one interface.',
+    icon: 'code',
+  },
+];
+
+const icons: Record<string, string> = {
+  plug: '<path d="M9 2v6M15 2v6M7 8h10v3a5 5 0 0 1-10 0V8ZM12 16v6"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3Z"/><path d="m9 12 2 2 4-4"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  chart: '<path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="13" y="6" width="3" height="11"/>',
+  doc: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  code: '<path d="m8 6-6 6 6 6M16 6l6 6-6 6"/>',
+};
+---
+
+<BaseLayout title="Promptopus — config-driven LLM evaluation harness">
+  <!-- HERO -->
+  <section class="relative overflow-hidden bg-[#1e1b2e] text-white">
+    <div
+      class="pointer-events-none absolute -top-40 left-1/2 h-[36rem] w-[36rem] -translate-x-1/2 rounded-full bg-pop-600/30 blur-[120px]"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute -bottom-40 right-0 h-[28rem] w-[28rem] rounded-full bg-pop-500/20 blur-[120px]"
+    >
+    </div>
+
+    <div class="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:py-28">
+      <div>
+        <a
+          href="/#dogfood"
+          class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-pop-200"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-pop-300"></span>
+          Proven on a real product eval · see the numbers
+        </a>
+
+        <h1 class="mt-6 text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+          Stop guessing <span class="text-pop-300">which model</span> to ship.
+        </h1>
+        <p class="mt-5 max-w-xl text-lg text-white/70">
+          Promptopus turns "which model, at what cost, at what quality?" into a repeatable,
+          version-controlled experiment. Define an eval in YAML, run it across vendors, and compare
+          models side by side — deterministic checks, an LLM judge, and cost/latency, all in one report.
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a
+            href="/docs/getting-started"
+            class="rounded-xl bg-pop-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-pop-900/40 transition hover:bg-pop-400"
+            >Get started — in 60 seconds</a
+          >
+          <a
+            href="/docs/introduction"
+            class="rounded-xl border border-white/20 px-5 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/10"
+            >Read the docs</a
+          >
+        </div>
+
+        <div
+          class="mt-6 flex max-w-md items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/30 px-4 py-2.5 font-mono text-sm"
+        >
+          <span class="text-white/80"><span class="text-pop-300">$</span> npx promptopus init</span>
+          <button
+            type="button"
+            data-copy="npx promptopus init"
+            class="copy rounded-md px-2 py-1 text-xs text-white/50 transition hover:bg-white/10 hover:text-white"
+            >Copy</button
+          >
+        </div>
+
+        <div class="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-xs text-white/45">
+          <span>● TypeScript, strict — no <code class="text-white/60">any</code> in core</span>
+          <span>● 48 unit tests</span>
+          <span>● MIT licensed</span>
+        </div>
+      </div>
+
+      <CodeWindow title="promptopus run readaloud-summarizer.yaml">
+        <pre class="text-white/90"><span class="text-pop-300">🐙 Promptopus</span> — ReadAloud TL;DR Summarizer
+  5 cases × 2 providers, concurrency 3
+
+  <span class="text-[#27c93f]">[10/10] ✓</span> coffee-history × llama-8b
+
+Metric                 gpt-4o-mini  llama-8b
+---------------------  -----------  --------
+Pass rate              <span class="text-[#27c93f]">100%</span>         <span class="text-[#27c93f]">100%</span>
+Score · judge          0.96         <span class="text-[#27c93f]">0.99</span>
+Cost · total           $0.0005      <span class="text-[#27c93f]">$0.0002</span>
+Latency · p95          <span class="text-[#27c93f]">2436ms</span>       6880ms
+
+<span class="text-pop-300">🐙 report written to results.json</span></pre>
+      </CodeWindow>
+    </div>
+
+    <!-- trust strip -->
+    <div class="relative border-t border-white/10">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-5 py-5 text-sm text-white/50">
+        <span class="text-xs uppercase tracking-wider text-white/35">Runs against</span>
+        <span>OpenAI</span>
+        <span>Anthropic</span>
+        <span>Cloudflare Workers AI</span>
+        <span>Any OpenAI-compatible endpoint</span>
+        <span>Local models</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM / SOLUTION -->
+  <section class="mx-auto max-w-7xl px-5 py-20">
+    <div class="grid gap-10 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-pop-600">The problem</h2>
+        <p class="mt-3 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+          "It worked when I tried it" is not an evaluation.
+        </p>
+        <ul class="mt-6 space-y-4 text-ink/70">
+          <li class="flex gap-3">
+            <span class="mt-1 text-fail">✗</span>
+            <span>You eyeball a few outputs, pick a model, and hope. No numbers, no record.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-1 text-fail">✗</span>
+            <span>A new model version ships and you have no way to know if quality silently regressed.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-1 text-fail">✗</span>
+            <span>Cost and latency are an afterthought — discovered in the bill, not the decision.</span>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-pop-600">The fix</h2>
+        <p class="mt-3 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+          One YAML file. One command. One report you can trust.
+        </p>
+        <ul class="mt-6 space-y-4 text-ink/70">
+          <li class="flex gap-3">
+            <span class="mt-1 text-pass">✓</span>
+            <span>Codify your test cases, models, and grading once — re-run it anytime, in CI.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-1 text-pass">✓</span>
+            <span>Score with deterministic checks, an LLM judge, and budgets — together.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="mt-1 text-pass">✓</span>
+            <span>Get a machine-readable report and a dashboard that makes the tradeoff obvious.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- THREE GRADER FAMILIES -->
+  <section id="features" class="border-y border-pop-300/40 bg-white">
+    <div class="mx-auto max-w-7xl px-5 py-20">
+      <div class="max-w-2xl">
+        <h2 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+          Three grader families, <span class="text-pop-600">one interface</span>.
+        </h2>
+        <p class="mt-4 text-lg text-ink/65">
+          Every scoring strategy implements the same <code class="rounded bg-pop-600/10 px-1.5 py-0.5 font-mono text-sm text-pop-700">Grader</code>.
+          Mix and match per case — structure gates, quality judges, and economics, in one pass.
+        </p>
+      </div>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {
+          families.map((f) => (
+            <div class="rounded-2xl border border-pop-300/50 bg-surface/50 p-6">
+              <span class={`inline-block rounded-full px-2.5 py-1 text-xs font-semibold ${f.accent}`}>
+                {f.tag}
+              </span>
+              <h3 class="mt-4 text-xl font-bold text-ink">{f.name}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink/65">{f.desc}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURE GRID -->
+  <section class="mx-auto max-w-7xl px-5 py-20">
+    <h2 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Built like a tool you'd trust in CI.</h2>
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        features.map((f) => (
+          <div class="rounded-2xl border border-pop-300/40 bg-white p-6 transition hover:border-pop-500/60 hover:shadow-lg hover:shadow-pop-500/10">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-pop-600/10 text-pop-700">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={icons[f.icon]} />
+            </div>
+            <h3 class="mt-4 font-bold text-ink">{f.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink/65">{f.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="border-y border-pop-300/40 bg-white">
+    <div class="mx-auto max-w-7xl px-5 py-20">
+      <h2 class="text-3xl font-bold tracking-tight text-ink sm:text-4xl">From zero to a report in three steps.</h2>
+      <div class="mt-12 grid gap-8 lg:grid-cols-3">
+        <div>
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-pop-700 text-sm font-bold text-white">1</span>
+            <h3 class="font-bold text-ink">Scaffold</h3>
+          </div>
+          <p class="mt-2 text-sm text-ink/65">Generate a working example suite you can run immediately.</p>
+          <CodeWindow class="mt-4"><pre>promptopus init</pre></CodeWindow>
+        </div>
+        <div>
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-pop-700 text-sm font-bold text-white">2</span>
+            <h3 class="font-bold text-ink">Run</h3>
+          </div>
+          <p class="mt-2 text-sm text-ink/65">Execute the matrix, with live progress and a summary table.</p>
+          <CodeWindow class="mt-4"><pre>promptopus run suite.yaml \
+  --providers a,b \
+  --out results.json</pre></CodeWindow>
+        </div>
+        <div>
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-pop-700 text-sm font-bold text-white">3</span>
+            <h3 class="font-bold text-ink">Compare</h3>
+          </div>
+          <p class="mt-2 text-sm text-ink/65">Open the dashboard and read the tradeoff at a glance.</p>
+          <CodeWindow class="mt-4"><pre>promptopus view results.json</pre></CodeWindow>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOGFOOD PROOF -->
+  <section id="dogfood" class="mx-auto max-w-7xl px-5 py-20">
+    <div class="grid items-center gap-12 lg:grid-cols-2">
+      <div>
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-pop-600">We dogfood it</h2>
+        <p class="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+          A real eval, with real numbers.
+        </p>
+        <p class="mt-4 text-lg text-ink/65">
+          We evaluated the TL;DR summarizer of a real product (ReadAloud) — its exact production
+          prompt — comparing <strong class="text-ink">gpt-4o-mini</strong> against the
+          <strong class="text-ink">Llama-3.1-8B</strong> it ships on Cloudflare Workers AI, judged by gpt-4o.
+        </p>
+
+        <div class="mt-6 overflow-hidden rounded-xl border border-pop-300/50">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-pop-700 text-left text-white">
+                <th class="px-4 py-2.5 font-semibold">Metric</th>
+                <th class="px-4 py-2.5 font-semibold">gpt-4o-mini</th>
+                <th class="px-4 py-2.5 font-semibold">llama-3.1-8b</th>
+              </tr>
+            </thead>
+            <tbody class="text-ink/80">
+              <tr class="border-t border-pop-300/40">
+                <td class="px-4 py-2.5">Faithfulness</td><td class="px-4 py-2.5">0.96</td><td class="px-4 py-2.5 font-semibold text-pass">1.00</td>
+              </tr>
+              <tr class="border-t border-pop-300/40 bg-surface/60">
+                <td class="px-4 py-2.5">Quality</td><td class="px-4 py-2.5">0.96</td><td class="px-4 py-2.5 font-semibold text-pass">0.99</td>
+              </tr>
+              <tr class="border-t border-pop-300/40">
+                <td class="px-4 py-2.5">Total cost</td><td class="px-4 py-2.5">$0.00048</td><td class="px-4 py-2.5 font-semibold text-pass">$0.00024</td>
+              </tr>
+              <tr class="border-t border-pop-300/40 bg-surface/60">
+                <td class="px-4 py-2.5">Latency p95</td><td class="px-4 py-2.5 font-semibold text-pass">2436 ms</td><td class="px-4 py-2.5">6880 ms</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-4 text-sm text-ink/60">
+          The verdict: the cheap open 8B model <strong class="text-ink">matched the frontier model on
+          quality and faithfulness at half the cost</strong> — trading latency. The eval said ship it.
+        </p>
+        <a href="/docs/dogfood" class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-pop-700 hover:text-pop-600">
+          Read the full writeup
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+
+      <div class="overflow-hidden rounded-2xl border border-pop-300/50 shadow-2xl shadow-pop-500/10">
+        <img src="/dashboard.png" alt="Promptopus dashboard comparing two models" class="w-full" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="bg-[#1e1b2e]">
+    <div class="relative mx-auto max-w-4xl overflow-hidden px-5 py-20 text-center text-white">
+      <div class="pointer-events-none absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-pop-600/30 blur-[100px]"></div>
+      <h2 class="relative text-3xl font-bold tracking-tight sm:text-4xl">Make your next model decision evidence-based.</h2>
+      <p class="relative mx-auto mt-4 max-w-xl text-white/70">
+        Install Promptopus, scaffold a suite, and have a comparison report in your terminal before
+        your coffee's cold.
+      </p>
+      <div class="relative mt-8 flex flex-wrap items-center justify-center gap-3">
+        <a href="/docs/getting-started" class="rounded-xl bg-pop-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-pop-900/40 transition hover:bg-pop-400">Get started</a>
+        <a href="/docs/configuration" class="rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/10">Browse the config reference</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.copy').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(btn.dataset.copy ?? '');
+      const prev = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => (btn.textContent = prev), 1500);
+    });
+  });
+</script>

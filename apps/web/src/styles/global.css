@@ -1,0 +1,173 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #1e1b2e;
+  --color-ink-soft: #3b3556;
+  --color-surface: #f5f3ff;
+  --color-pop-200: #ddd6fe;
+  --color-pop-300: #c4b5fd;
+  --color-pop-400: #a78bfa;
+  --color-pop-500: #a855f7;
+  --color-pop-600: #7c3aed;
+  --color-pop-700: #6d28d9;
+  --color-pop-900: #2e1065;
+  --color-pass: #16a34a;
+  --color-fail: #dc2626;
+  --color-warn: #d97706;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-pop-300);
+  color: var(--color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---- Docs prose ---- */
+.prose {
+  color: color-mix(in srgb, var(--color-ink) 88%, transparent);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+.prose > * + * {
+  margin-top: 1.1rem;
+}
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--color-ink);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  scroll-margin-top: 5rem;
+}
+.prose h1 {
+  font-size: 2.25rem;
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+}
+.prose h2 {
+  font-size: 1.5rem;
+  margin-top: 2.75rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-pop-300) 45%, transparent);
+}
+.prose h3 {
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}
+.prose h4 {
+  font-size: 1.02rem;
+  margin-top: 1.5rem;
+}
+.prose a {
+  color: var(--color-pop-700);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--color-pop-300);
+}
+.prose a:hover {
+  text-decoration-color: var(--color-pop-600);
+}
+.prose strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.3rem;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li {
+  margin-top: 0.4rem;
+}
+.prose li::marker {
+  color: var(--color-pop-500);
+}
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: color-mix(in srgb, var(--color-pop-600) 10%, transparent);
+  color: var(--color-pop-700);
+  padding: 0.12em 0.4em;
+  border-radius: 0.35rem;
+  white-space: nowrap;
+}
+.prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  border-radius: 0.75rem;
+  padding: 1rem 1.15rem;
+  overflow-x: auto;
+  border: 1px solid color-mix(in srgb, var(--color-pop-900) 30%, transparent);
+  tab-size: 2;
+}
+.prose pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: 0.85rem;
+  white-space: pre;
+}
+.prose blockquote {
+  border-left: 3px solid var(--color-pop-500);
+  background: color-mix(in srgb, var(--color-pop-500) 7%, transparent);
+  padding: 0.6rem 1rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: var(--color-ink-soft);
+}
+.prose blockquote p {
+  margin: 0;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  display: block;
+  overflow-x: auto;
+}
+.prose th,
+.prose td {
+  border: 1px solid color-mix(in srgb, var(--color-pop-300) 55%, transparent);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.prose th {
+  background: color-mix(in srgb, var(--color-pop-500) 10%, transparent);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.prose hr {
+  border: none;
+  border-top: 1px solid color-mix(in srgb, var(--color-pop-300) 50%, transparent);
+  margin: 2rem 0;
+}
