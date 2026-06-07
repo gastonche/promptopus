@@ -1,0 +1,163 @@
+name: ReadAloud Summarizer — Multi-Model Benchmark
+description: >
+  A serious cross-model benchmark of the ReadAloud TL;DR feature: 10 candidate models (a frontier
+  small model plus a Workers AI ladder from 3B to 70B, including a reasoning model) scored by a
+  12-grader battery — simple deterministic asserts, complex LLM-as-judge, cost/latency budgets, and
+  five custom graders defined in promptopus.config.mjs.
+
+judge:
+  provider: openai
+  model: gpt-4o
+
+providers:
+  - { name: gpt-4o-mini, kind: openai, model: gpt-4o-mini }
+  - name: llama-3.2-3b
+    kind: openai-compat
+    model: "workers-ai/@cf/meta/llama-3.2-3b-instruct"
+    baseUrlEnv: CF_AI_BASE_URL
+    apiKeyEnv: CLOUDFLARE_API_TOKEN
+  - name: llama-3.1-8b
+    kind: openai-compat
+    model: "workers-ai/@cf/meta/llama-3.1-8b-instruct"
+    baseUrlEnv: CF_AI_BASE_URL
+    apiKeyEnv: CLOUDFLARE_API_TOKEN
+  - name: llama-3.1-70b
+    kind: openai-compat
+    model: "workers-ai/@cf/meta/llama-3.1-70b-instruct"
+    baseUrlEnv: CF_AI_BASE_URL
+    apiKeyEnv: CLOUDFLARE_API_TOKEN
+  - name: llama-3.3-70b
+    kind: openai-compat
+    model: "workers-ai/@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+    baseUrlEnv: CF_AI_BASE_URL
+    apiKeyEnv: CLOUDFLARE_API_TOKEN
+  - name: llama-4-scout
+    kind: openai-compat
+    model: "workers-ai/@cf/meta/llama-4-scout-17b-16e-instruct"
+    baseUrlEnv: CF_AI_BASE_URL
+    apiKeyEnv: CLOUDFLARE_API_TOKEN
+  - name: mistral-24b
+    kind: openai-compat
+    model: "workers-ai/@cf/mistralai/mistral-small-3.1-24b-instruct"
+    baseUrlEnv: CF_AI_BASE_URL
+    apiKeyEnv: CLOUDFLARE_API_TOKEN
+  - name: qwen-32b
+    kind: openai-compat
+    model: "workers-ai/@cf/qwen/qwen2.5-coder-32b-instruct"
+    baseUrlEnv: CF_AI_BASE_URL
+    apiKeyEnv: CLOUDFLARE_API_TOKEN
+  - name: gemma-12b
+    kind: openai-compat
+    model: "workers-ai/@cf/google/gemma-3-12b-it"
+    baseUrlEnv: CF_AI_BASE_URL
+    apiKeyEnv: CLOUDFLARE_API_TOKEN
+  - name: qwq-32b
+    kind: openai-compat
+    model: "workers-ai/@cf/qwen/qwq-32b"
+    baseUrlEnv: CF_AI_BASE_URL
+    apiKeyEnv: CLOUDFLARE_API_TOKEN
+
+defaults:
+  temperature: 0.3
+  maxTokens: 512
+  systemPrompt: >-
+    Summarize the substance of the text itself: state its key points, facts, and conclusions
+    directly, as if conveying the information to the reader. Do NOT describe or refer to the text —
+    never write things like "This article is about", "The text discusses", "This content covers",
+    "The author explains", or "In summary". Write the summary in the SAME language as the text. Just
+    deliver the content in 3–5 sentences of plain prose. No preamble, no bullet points, no markdown.
+  graders:
+    # --- simple deterministic ---
+    - { type: non-empty }
+    - { type: max-length, chars: 1000 }
+    - type: regex
+      pattern: "^(?![\\s\\S]*(?:^\\s*[-*+]\\s|^#{1,6}\\s|```|\\*\\*))[\\s\\S]+$"
+      flags: m
+    # --- custom (promptopus.config.mjs) ---
+    - { type: sentence-count, min: 3, max: 5 }
+    - { type: no-meta-reference }
+    - { type: no-reasoning-leak }
+    - { type: number-fidelity }
+    - { type: compression, maxRatio: 0.85 }
+    # --- complex: LLM-as-judge ---
+    - { type: judge-faithfulness, threshold: 0.7 }
+    - type: judge-quality
+      threshold: 0.7
+      rubric: >-
+        Score a TL;DR summary using the FULL 0.0-1.0 range; do NOT default to 1.0. Start at 1.0 and
+        deduct: -0.1 if longer than 5 sentences or wordy; -0.15 for any meta-reference; -0.15 if it
+        omits a main point; -0.1 for clumsy phrasing or filler; -0.2 for bullets, markdown, or leaked
+        reasoning. Reserve 1.0 for a flawless, tight 3-5 sentence summary.
+    # --- cost + latency ---
+    - { type: latency-budget, p95Ms: 12000 }
+    - { type: cost-budget, maxUsd: 0.003 }
+
+cases:
+  - id: eiffel-tower
+    vars: { title: The Eiffel Tower }
+    prompt: "Title: {{title}}\n\n{{source}}"
+    source: >-
+      The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. It is
+      named after the engineer Gustave Eiffel, whose company designed and built the tower between 1887
+      and 1889 as the centerpiece of the 1889 World's Fair. Standing 330 metres tall, it was the
+      tallest man-made structure in the world for 41 years until the completion of the Chrysler
+      Building in New York in 1930. The tower receives almost seven million visitors a year, making it
+      the most-visited paid monument in the world.
+
+  - id: photosynthesis
+    vars: { title: How Photosynthesis Works }
+    prompt: "Title: {{title}}\n\n{{source}}"
+    source: >-
+      Photosynthesis is the process by which green plants, algae, and some bacteria convert light
+      energy into chemical energy stored in glucose. Inside chloroplasts, the pigment chlorophyll
+      absorbs sunlight, which drives a reaction that splits water molecules and combines carbon
+      dioxide from the air into sugars, releasing oxygen as a by-product. The light-dependent
+      reactions capture energy as ATP and NADPH, while the Calvin cycle uses that energy to build
+      glucose. Because it produces the oxygen most organisms breathe and forms the base of nearly
+      every food chain, photosynthesis underpins life on Earth.
+
+  - id: market-recap
+    vars: { title: Markets Edge Higher as Inflation Cools }
+    prompt: "Title: {{title}}\n\n{{source}}"
+    source: >-
+      Global equity markets rose modestly on Tuesday as investors weighed cooler than expected
+      inflation data against cautious signals from central banks. The benchmark index closed up 0.6
+      percent, led by technology shares, while energy stocks lagged amid softer crude oil prices. Bond
+      yields slipped as traders increased bets on an interest-rate cut later in the year. Analysts
+      warned that volatility could return ahead of next week's central bank meeting, where
+      policymakers are expected to signal the path of future rates.
+
+  - id: black-holes
+    vars: { title: What Is a Black Hole? }
+    prompt: "Title: {{title}}\n\n{{source}}"
+    source: >-
+      A black hole is a region of spacetime where gravity is so strong that nothing — not even light —
+      can escape once it crosses the boundary known as the event horizon. Black holes form when
+      massive stars collapse at the end of their lives, compressing enormous mass into an extremely
+      small volume. Although they cannot be seen directly, astronomers detect them by observing the
+      intense radiation emitted by gas and dust as it spirals inward, and by the motion of nearby
+      stars. In 2019, the Event Horizon Telescope captured the first image of a black hole's shadow,
+      in the galaxy M87.
+
+  - id: coffee-history
+    vars: { title: A Brief History of Coffee }
+    prompt: "Title: {{title}}\n\n{{source}}"
+    source: >-
+      Coffee originated in the highlands of Ethiopia, where, according to legend, a goatherd named
+      Kaldi noticed his goats becoming energetic after eating the berries of a certain shrub. By the
+      15th century, coffee was being cultivated and traded in Yemen, and it spread through the Arabian
+      Peninsula, where coffee houses became centers of conversation and commerce. Over the following
+      centuries coffee reached Europe, the Americas, and beyond, becoming one of the most widely
+      consumed beverages in the world. Today it is a global commodity supporting the livelihoods of
+      millions of farmers.
+
+  - id: apollo-11
+    vars: { title: Apollo 11 }
+    prompt: "Title: {{title}}\n\n{{source}}"
+    source: >-
+      Apollo 11 was the spaceflight that first landed humans on the Moon. Commander Neil Armstrong and
+      lunar module pilot Buzz Aldrin landed the Apollo Lunar Module Eagle on July 20, 1969, at 20:17
+      UTC, while Michael Collins orbited above in the command module Columbia. Armstrong became the
+      first person to step onto the lunar surface six hours and 39 minutes later, on July 21. They
+      spent about two and a quarter hours outside the spacecraft and collected 47.5 pounds of lunar
+      material to bring back to Earth.
