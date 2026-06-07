@@ -32,3 +32,6 @@ packages/core/dashboard/
 # Remotion render output + generated audio
 apps/video/out/
 apps/video/public/music.wav
+
+apps/video/audio-candidates/
+apps/video/public/music.mp3

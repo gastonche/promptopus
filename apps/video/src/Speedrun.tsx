@@ -43,12 +43,12 @@ export const Speedrun: React.FC<SpeedrunProps> = ({ music }) => {
       })}
       {music && (
         <Audio
-          src={staticFile('music.wav')}
+          src={staticFile('music.mp3')}
           volume={(f) =>
             interpolate(
               f,
-              [0, 20, durationInFrames - 45, durationInFrames],
-              [0, 0.5, 0.5, 0],
+              [0, 18, durationInFrames - 50, durationInFrames],
+              [0, 0.62, 0.62, 0],
               { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
             )
           }

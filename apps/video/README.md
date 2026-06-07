@@ -27,9 +27,12 @@ Stills for quick checks: `npx remotion still Speedrun out/f.png --frame=480 --sc
 
 ## Assets & licensing
 
-- **Music** is **original and royalty-free (CC0)** — synthesized from scratch by
-  [`scripts/gen-music.mjs`](scripts/gen-music.mjs) (a clean A-minor / 120 BPM bed). No third-party
-  audio, no attribution required. `public/music.wav` is generated, not committed.
+- **Music:** _"Cinematic Action Percussion Trailer"_ by **Gregor Quendel**
+  ([gregorquendel.com](https://www.gregorquendel.com)) — **CC-BY 4.0**. Downloaded by
+  [`scripts/get-music.mjs`](scripts/get-music.mjs) to `public/music.mp3` (gitignored). Anywhere the
+  video is published, credit Gregor Quendel (CC-BY 4.0).
+  - A fully original **CC0** synth bed is also available via `npm run music:synth`
+    ([`scripts/gen-music.mjs`](scripts/gen-music.mjs)) if you prefer no attribution.
 - Fonts (Inter, JetBrains Mono) load via `@remotion/google-fonts`.
 - All visuals are original Promptopus brand assets.
 

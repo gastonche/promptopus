@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "music": "node scripts/gen-music.mjs",
+    "music": "node scripts/get-music.mjs",
+    "music:synth": "node scripts/gen-music.mjs",
     "studio": "remotion studio",
-    "render": "node scripts/gen-music.mjs && remotion render Speedrun out/promptopus-teaser.mp4 --concurrency=4",
+    "render": "node scripts/get-music.mjs && remotion render Speedrun out/promptopus-teaser.mp4 --concurrency=4",
     "still": "remotion still Speedrun out/still.png",
     "typecheck": "tsc --noEmit"
   },
