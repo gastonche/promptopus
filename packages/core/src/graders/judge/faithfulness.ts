@@ -1,3 +1,4 @@
+import { errMessage } from '../../util.js';
 import type { GraderSpec } from '../../config/schema.js';
 import type { Grader, GraderResult } from '../../domain/grader.js';
 import { GraderError } from '../errors.js';
@@ -39,7 +40,7 @@ export function faithfulnessGrader(spec: Spec, judge: JudgeClient | undefined): 
           family: 'judge',
           score: 0,
           passed: false,
-          detail: `judge failed: ${(err as Error).message}`,
+          detail: `judge failed: ${errMessage(err)}`,
         };
       }
     },

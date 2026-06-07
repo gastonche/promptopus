@@ -10,16 +10,39 @@ const S = '#a5f3b0';
 const D = '#8b86a8';
 
 const LINES: React.ReactNode[] = [
-  <><Tok c={K}>name</Tok>: ReadAloud Summarizer</>,
-  <><Tok c={K}>judge</Tok>: {'{'} provider: openai, model: gpt-4o {'}'}</>,
-  <><Tok c={K}>providers</Tok>:</>,
-  <>  - {'{'} name: <Tok c={S}>gpt-4o-mini</Tok>, kind: openai {'}'}</>,
-  <>  - {'{'} name: <Tok c={S}>llama-8b</Tok>, kind: openai-compat {'}'}</>,
-  <><Tok c={K}>defaults</Tok>:</>,
-  <>  graders:</>,
-  <>    - {'{'} type: <Tok c={G}>non-empty</Tok> {'}'}</>,
-  <>    - {'{'} type: <Tok c={G}>judge-faithfulness</Tok>, threshold: 0.7 {'}'}</>,
-  <>    - {'{'} type: <Tok c={G}>cost-budget</Tok>, maxUsd: 0.002 {'}'}</>,
+  <>
+    <Tok c={K}>name</Tok>: ReadAloud Summarizer
+  </>,
+  <>
+    <Tok c={K}>judge</Tok>: {'{'} provider: openai, model: gpt-4o {'}'}
+  </>,
+  <>
+    <Tok c={K}>providers</Tok>:
+  </>,
+  <>
+    {' '}
+    - {'{'} name: <Tok c={S}>gpt-4o-mini</Tok>, kind: openai {'}'}
+  </>,
+  <>
+    {' '}
+    - {'{'} name: <Tok c={S}>llama-8b</Tok>, kind: openai-compat {'}'}
+  </>,
+  <>
+    <Tok c={K}>defaults</Tok>:
+  </>,
+  <> graders:</>,
+  <>
+    {' '}
+    - {'{'} type: <Tok c={G}>non-empty</Tok> {'}'}
+  </>,
+  <>
+    {' '}
+    - {'{'} type: <Tok c={G}>judge-faithfulness</Tok>, threshold: 0.7 {'}'}
+  </>,
+  <>
+    {' '}
+    - {'{'} type: <Tok c={G}>cost-budget</Tok>, maxUsd: 0.002 {'}'}
+  </>,
 ];
 
 export const MontageYaml: React.FC = () => {

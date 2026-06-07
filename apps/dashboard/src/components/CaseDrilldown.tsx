@@ -10,7 +10,9 @@ const FAMILY_STYLE: Record<string, string> = {
 function FamilyChip({ graderId }: { graderId: string }) {
   const family = familyOf(graderId);
   return (
-    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${FAMILY_STYLE[family]}`}>
+    <span
+      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${FAMILY_STYLE[family]}`}
+    >
       {family}
     </span>
   );
@@ -87,7 +89,10 @@ export function CaseDrilldown({ report, caseId }: { report: Report; caseId: stri
                 <div className="mt-auto grid grid-cols-3 gap-2 px-4 pb-4 pt-1">
                   <Metric label="Latency" value={`${cell.output.latencyMs} ms`} />
                   <Metric label="Cost" value={`$${cell.output.costUsd.toFixed(5)}`} />
-                  <Metric label="Tokens" value={`${cell.output.tokensIn}/${cell.output.tokensOut}`} />
+                  <Metric
+                    label="Tokens"
+                    value={`${cell.output.tokensIn}/${cell.output.tokensOut}`}
+                  />
                 </div>
               )}
             </>

@@ -8,7 +8,7 @@ providers:
   - name: mock-b
     kind: mock
     model: mock-verbose
-    text: "Paris is the capital of France. It sits on the Seine."
+    text: 'Paris is the capital of France. It sits on the Seine.'
 
 defaults:
   graders:
@@ -16,7 +16,7 @@ defaults:
 
 cases:
   - id: mentions-paris
-    prompt: "The capital of France is Paris."
+    prompt: 'The capital of France is Paris.'
     graders:
       - type: non-empty
       - type: contains
@@ -26,7 +26,7 @@ cases:
         chars: 60
 
   - id: length-cap
-    prompt: "This sentence is intentionally longer than the strict cap so one provider trips the max-length grader and the table shows a failure."
+    prompt: 'This sentence is intentionally longer than the strict cap so one provider trips the max-length grader and the table shows a failure.'
     graders:
       - type: non-empty
       - type: max-length
@@ -37,4 +37,4 @@ cases:
     graders:
       - type: is-valid-json
       - type: regex
-        pattern: "Tokyo"
+        pattern: 'Tokyo'

@@ -49,8 +49,15 @@ describe('AnthropicProvider', () => {
   });
 
   it('maps 529 (overloaded) to a retryable error', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ error: 'overloaded' }, 529)));
-    const provider = new AnthropicProvider({ name: 'haiku', model: 'claude-3-5-haiku-latest', apiKey: 'k' });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => jsonResponse({ error: 'overloaded' }, 529)),
+    );
+    const provider = new AnthropicProvider({
+      name: 'haiku',
+      model: 'claude-3-5-haiku-latest',
+      apiKey: 'k',
+    });
     await expect(provider.generate('hi')).rejects.toMatchObject({ status: 529, retryable: true });
   });
 });

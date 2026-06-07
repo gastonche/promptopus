@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest a new provider, grader, or capability.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: The use case first — what are you trying to evaluate that's hard today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What you'd like. If it's a new provider/grader, note that it may be a one-interface plugin (see the Extending docs) rather than a core change.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false

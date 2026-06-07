@@ -49,10 +49,10 @@ provider — here's a minimal suite you can paste into `quickstart.yaml`:
 name: Quickstart
 providers:
   - { name: mock-a, kind: mock, model: mock }
-  - { name: mock-b, kind: mock, model: mock, text: "Paris is the capital of France." }
+  - { name: mock-b, kind: mock, model: mock, text: 'Paris is the capital of France.' }
 cases:
   - id: mentions-paris
-    prompt: "The capital of France is Paris."
+    prompt: 'The capital of France is Paris.'
     graders:
       - { type: non-empty }
       - { type: contains, value: Paris, caseInsensitive: true }

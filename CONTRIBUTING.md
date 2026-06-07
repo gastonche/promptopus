@@ -7,7 +7,7 @@ and no `any` in core logic.
 
 ```bash
 npm install
-npm run build      # turbo builds @promptopus/core then apps/dashboard
+npm run build      # turbo builds the promptopus package then apps/dashboard
 npm run typecheck  # strict tsc across all packages
 npm test           # vitest (core)
 ```
@@ -18,7 +18,7 @@ in what you need. **Never commit `.env`** (it is gitignored).
 ## Repo layout
 
 ```
-packages/core/         @promptopus/core — domain, config, providers, graders, runner, CLI
+packages/core/         promptopus (packages/core) — domain, config, providers, graders, runner, CLI
   src/domain/          Provider / Grader / TestCase / RunResult / Report interfaces
   src/config/          zod schema + loader (friendly errors)
   src/providers/       provider implementations + registry + pricing

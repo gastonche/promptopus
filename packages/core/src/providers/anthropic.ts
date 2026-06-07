@@ -1,3 +1,4 @@
+import { errMessage } from '../util.js';
 import type { GenerateOptions, GenerateResult, Provider } from '../domain/provider.js';
 import { parseRetryAfter, ProviderError } from './errors.js';
 import { computeCostUsd } from './pricing.js';
@@ -87,7 +88,9 @@ export class AnthropicProvider implements Provider {
     } catch (err) {
       const aborted = err instanceof Error && err.name === 'AbortError';
       throw new ProviderError(
-        aborted ? `request timed out after ${this.timeoutMs}ms` : `network error: ${(err as Error).message}`,
+        aborted
+          ? `request timed out after ${this.timeoutMs}ms`
+          : `network error: ${errMessage(err)}`,
         { kind: aborted ? 'timeout' : 'network', retryable: true, cause: err },
       );
     } finally {
@@ -97,12 +100,15 @@ export class AnthropicProvider implements Provider {
     if (!response.ok) {
       const detail = await response.text().catch(() => '');
       const retryAfterMs = parseRetryAfter(response.headers.get('retry-after'));
-      throw new ProviderError(`HTTP ${response.status} from ${this.name}: ${detail.slice(0, 300)}`, {
-        kind: 'http',
-        status: response.status,
-        retryable: RETRYABLE_STATUS.has(response.status),
-        ...(retryAfterMs !== undefined ? { retryAfterMs } : {}),
-      });
+      throw new ProviderError(
+        `HTTP ${response.status} from ${this.name}: ${detail.slice(0, 300)}`,
+        {
+          kind: 'http',
+          status: response.status,
+          retryable: RETRYABLE_STATUS.has(response.status),
+          ...(retryAfterMs !== undefined ? { retryAfterMs } : {}),
+        },
+      );
     }
 
     try {

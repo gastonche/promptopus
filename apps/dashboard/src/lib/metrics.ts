@@ -79,7 +79,10 @@ export function buildMatrix(providers: ProviderSummary[]): MatrixRow[] {
       'Total cost',
       'Summed USD across all cases',
       'low',
-      providers.map((p) => ({ display: `$${p.cost.totalUsd.toFixed(4)}`, numeric: p.cost.totalUsd })),
+      providers.map((p) => ({
+        display: `$${p.cost.totalUsd.toFixed(4)}`,
+        numeric: p.cost.totalUsd,
+      })),
     ),
     row(
       'Cost / call',
@@ -91,13 +94,19 @@ export function buildMatrix(providers: ProviderSummary[]): MatrixRow[] {
       'Latency p50',
       'Median call latency',
       'low',
-      providers.map((p) => ({ display: `${Math.round(p.latency.p50Ms)} ms`, numeric: p.latency.p50Ms })),
+      providers.map((p) => ({
+        display: `${Math.round(p.latency.p50Ms)} ms`,
+        numeric: p.latency.p50Ms,
+      })),
     ),
     row(
       'Latency p95',
       'Tail call latency',
       'low',
-      providers.map((p) => ({ display: `${Math.round(p.latency.p95Ms)} ms`, numeric: p.latency.p95Ms })),
+      providers.map((p) => ({
+        display: `${Math.round(p.latency.p95Ms)} ms`,
+        numeric: p.latency.p95Ms,
+      })),
     ),
     row(
       'Errors',
@@ -110,6 +119,7 @@ export function buildMatrix(providers: ProviderSummary[]): MatrixRow[] {
 
 export function familyOf(graderId: string): 'deterministic' | 'judge' | 'benchmark' {
   if (graderId.startsWith('judge-')) return 'judge';
-  if (graderId.startsWith('latency-budget') || graderId.startsWith('cost-budget')) return 'benchmark';
+  if (graderId.startsWith('latency-budget') || graderId.startsWith('cost-budget'))
+    return 'benchmark';
   return 'deterministic';
 }

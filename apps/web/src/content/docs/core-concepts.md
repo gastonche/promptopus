@@ -18,12 +18,12 @@ interface GenerateResult {
   tokensIn: number;
   tokensOut: number;
   latencyMs: number;
-  costUsd: number;   // computed centrally from a pricing table
+  costUsd: number; // computed centrally from a pricing table
 }
 
 interface Provider {
-  readonly name: string;   // unique id, used in YAML + report columns
-  readonly model: string;  // vendor model id
+  readonly name: string; // unique id, used in YAML + report columns
+  readonly model: string; // vendor model id
   generate(prompt: string, opts?: GenerateOptions): Promise<GenerateResult>;
 }
 ```
@@ -42,9 +42,9 @@ type GraderFamily = 'deterministic' | 'judge' | 'benchmark';
 interface GraderResult {
   graderId: string;
   family: GraderFamily;
-  score: number;    // 0..1
+  score: number; // 0..1
   passed: boolean;
-  detail: string;   // human-readable explanation
+  detail: string; // human-readable explanation
 }
 
 interface Grader {
@@ -66,10 +66,10 @@ to run them against and an optional judge model.
 interface TestCase {
   id: string;
   vars?: Record<string, string | number | boolean>;
-  prompt: string;            // {{var}} interpolation
+  prompt: string; // {{var}} interpolation
   systemPrompt?: string;
-  reference?: string;        // expected/reference output
-  source?: string;           // grounding text for faithfulness
+  reference?: string; // expected/reference output
+  source?: string; // grounding text for faithfulness
   graders: GraderSpec[];
 }
 ```
@@ -100,10 +100,10 @@ The `Report` is the aggregate artifact the dashboard consumes:
 ```ts
 interface Report {
   suiteName: string;
-  generatedAt: string;           // ISO timestamp
-  cases: ReportCase[];           // id, prompt, source, reference
-  providers: ProviderSummary[];  // one per provider column
-  results: RunResult[];          // every raw cell
+  generatedAt: string; // ISO timestamp
+  cases: ReportCase[]; // id, prompt, source, reference
+  providers: ProviderSummary[]; // one per provider column
+  results: RunResult[]; // every raw cell
   meta: { promptopusVersion: string; caseCount: number; providerCount: number };
 }
 ```

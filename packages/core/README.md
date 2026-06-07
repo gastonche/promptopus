@@ -58,8 +58,13 @@ export default defineConfig({
       family: 'deterministic',
       grade: ({ output }) => {
         const n = output.text.trim().split(/\s+/).length;
-        return { graderId: 'word-count', family: 'deterministic',
-                 score: n <= spec.max ? 1 : 0, passed: n <= spec.max, detail: `${n} words` };
+        return {
+          graderId: 'word-count',
+          family: 'deterministic',
+          score: n <= spec.max ? 1 : 0,
+          passed: n <= spec.max,
+          detail: `${n} words`,
+        };
       },
     }),
   },

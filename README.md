@@ -9,10 +9,26 @@
 </p>
 
 <p align="center">
-  TypeScript (strict, no <code>any</code> in core) · zod-validated configs · 48 unit tests · pluggable providers &amp; graders
+  TypeScript (strict, no <code>any</code> in core) · zod-validated configs · 76 unit tests · pluggable providers &amp; graders
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/promptopus"><img src="https://img.shields.io/npm/v/promptopus?color=6D28D9" alt="npm version" /></a>
+  <a href="https://github.com/gastonche/promptopus/actions/workflows/ci.yml"><img src="https://github.com/gastonche/promptopus/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/npm/l/promptopus?color=6D28D9" alt="MIT license" /></a>
+  <img src="https://img.shields.io/node/v/promptopus?color=6D28D9" alt="node version" />
+  <a href="https://promptopus.pages.dev"><img src="https://img.shields.io/badge/docs-promptopus.pages.dev-6D28D9" alt="docs" /></a>
 </p>
 
 ---
+
+## Contents
+
+- [Why Promptopus](#why-promptopus) · [Features](#features) · [Install](#install) · [Quick start](#quick-start)
+- [Architecture](#architecture) · [The three grader families](#the-three-grader-families-and-when-each-matters)
+- [Dogfood: the ReadAloud benchmark](#dogfood-the-readaloud-summarizer-benchmark)
+- [Adding a provider](#adding-a-provider) · [Adding a grader](#adding-a-grader) · [CLI reference](#cli-reference)
+- [Known limitations](#known-limitations) · [What I'd do at scale](#what-id-do-at-scale) · [Development](#development)
 
 ## Why Promptopus
 
@@ -22,7 +38,7 @@ experiment: one YAML file defines your test cases, the models to compare, and ho
 command runs the matrix and writes a machine-readable report; a dashboard turns that report into a
 side-by-side comparison you can actually reason about.
 
-The two interfaces — **`Provider`** and **`Grader`** — *are* the architecture. Adding a model vendor
+The two interfaces — **`Provider`** and **`Grader`** — _are_ the architecture. Adding a model vendor
 or a scoring strategy means implementing one interface and registering it; nothing else changes.
 
 ## Features
@@ -121,11 +137,11 @@ flowchart LR
 
 ## The three grader families (and when each matters)
 
-| Family | Examples | Cost | Use it when… |
-| --- | --- | --- | --- |
-| **Deterministic** | `equals`, `contains`, `regex`, `is-valid-json`, `json-schema`, `max-length`, `non-empty` | free, instant | the output has a checkable contract — valid JSON, contains a required string, under a length cap, plain prose. Catch regressions that don't need a model to spot. |
-| **LLM-as-judge** | `judge-faithfulness`, `judge-quality` | a judge API call per check | quality is subjective — is the summary faithful to the source? is the answer good? The judge model returns a structured, validated score; judge failures degrade gracefully to a failing result. |
-| **Cost + latency** | `latency-budget`, `cost-budget` | free (uses captured metrics) | you have an SLA or a budget. These grade the metrics every call already produces, and the report aggregates p50/p95 and totals across the suite. |
+| Family             | Examples                                                                                 | Cost                         | Use it when…                                                                                                                                                                                     |
+| ------------------ | ---------------------------------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Deterministic**  | `equals`, `contains`, `regex`, `is-valid-json`, `json-schema`, `max-length`, `non-empty` | free, instant                | the output has a checkable contract — valid JSON, contains a required string, under a length cap, plain prose. Catch regressions that don't need a model to spot.                                |
+| **LLM-as-judge**   | `judge-faithfulness`, `judge-quality`                                                    | a judge API call per check   | quality is subjective — is the summary faithful to the source? is the answer good? The judge model returns a structured, validated score; judge failures degrade gracefully to a failing result. |
+| **Cost + latency** | `latency-budget`, `cost-budget`                                                          | free (uses captured metrics) | you have an SLA or a budget. These grade the metrics every call already produces, and the report aggregates p50/p95 and totals across the suite.                                                 |
 
 Most real suites combine all three: deterministic gates for structure, judges for quality, budgets for
 the economics.
@@ -133,23 +149,23 @@ the economics.
 ## Dogfood: the ReadAloud summarizer benchmark
 
 Promptopus benchmarks the **TL;DR summarization** feature of
-[ReadAloud](https://github.com/gastonche/read-aloud) — using its *exact* production prompt — across
+[ReadAloud](https://github.com/gastonche/read-aloud) — using its _exact_ production prompt — across
 **10 models** and a **12-grader battery** (simple deterministic, an LLM judge, cost/latency, and five
 **custom** graders written in [`promptopus.config.mjs`](promptopus.config.mjs)).
 
 Top of the board (sorted by pass rate; 6 cases each, judged by `gpt-4o`):
 
-| Model | Pass | Judge | Cost (6 cases) | p95 |
-| --- | --- | --- | --- | --- |
-| **llama-3.1-8b** (Workers AI) | **99%** | **1.00** | $0.0003 | 3220 ms |
-| mistral-small-24b | 99% | 0.98 | $0.0008 | 4576 ms |
-| gemma-3-12b | 97% | 1.00 | $0.0008 | 1665 ms |
-| gpt-4o-mini (OpenAI) | 92% | 1.00 | $0.0006 | 3859 ms |
-| llama-3.3-70b (largest) | 92% | 0.93 | $0.0021 | 4185 ms |
-| **qwq-32b** (reasoning) | **39%** | 0.77 | $0.0033 | 15837 ms |
+| Model                         | Pass    | Judge    | Cost (6 cases) | p95      |
+| ----------------------------- | ------- | -------- | -------------- | -------- |
+| **llama-3.1-8b** (Workers AI) | **99%** | **1.00** | $0.0003        | 3220 ms  |
+| mistral-small-24b             | 99%     | 0.98     | $0.0008        | 4576 ms  |
+| gemma-3-12b                   | 97%     | 1.00     | $0.0008        | 1665 ms  |
+| gpt-4o-mini (OpenAI)          | 92%     | 1.00     | $0.0006        | 3859 ms  |
+| llama-3.3-70b (largest)       | 92%     | 0.93     | $0.0021        | 4185 ms  |
+| **qwq-32b** (reasoning)       | **39%** | 0.77     | $0.0033        | 15837 ms |
 
 **Findings:** the **8B open model ReadAloud ships is the sweet spot** (99% pass, perfect
-faithfulness *and* quality, ~$0.0003) — it ties or beats the frontier `gpt-4o-mini` and every larger
+faithfulness _and_ quality, ~$0.0003) — it ties or beats the frontier `gpt-4o-mini` and every larger
 model; **scaling up mostly bought verbosity** (the 70B and gpt-4o-mini lost points to the custom
 `compression` grader). And the **reasoning model is the wrong tool** — `qwq-32b` leaked chain-of-thought
 and cratered at 39%, caught simultaneously by length, format, `no-reasoning-leak`, `number-fidelity`,
@@ -167,12 +183,21 @@ import type { GenerateResult, Provider } from '../domain/provider.js';
 import { computeCostUsd } from './pricing.js';
 
 export class CohereProvider implements Provider {
-  constructor(readonly name: string, readonly model: string, private apiKey: string) {}
+  constructor(
+    readonly name: string,
+    readonly model: string,
+    private apiKey: string,
+  ) {}
   async generate(prompt: string): Promise<GenerateResult> {
     const start = performance.now();
     // ...call the API, read usage...
-    return { text, tokensIn, tokensOut, latencyMs: Math.round(performance.now() - start),
-             costUsd: computeCostUsd(this.model, tokensIn, tokensOut) };
+    return {
+      text,
+      tokensIn,
+      tokensOut,
+      latencyMs: Math.round(performance.now() - start),
+      costUsd: computeCostUsd(this.model, tokensIn, tokensOut),
+    };
   }
 }
 ```
@@ -194,8 +219,13 @@ export function wordCountGrader(spec: { max: number }): Grader {
     family: 'deterministic',
     grade({ output }) {
       const n = output.text.trim().split(/\s+/).length;
-      return { graderId: `word-count(${spec.max})`, family: 'deterministic',
-               score: n <= spec.max ? 1 : 0, passed: n <= spec.max, detail: `${n}/${spec.max} words` };
+      return {
+        graderId: `word-count(${spec.max})`,
+        family: 'deterministic',
+        score: n <= spec.max ? 1 : 0,
+        passed: n <= spec.max,
+        detail: `${n}/${spec.max} words`,
+      };
     },
   };
 }
@@ -205,18 +235,18 @@ Add a variant to the `GraderSpecSchema` union and one `case` in `graders/registr
 
 ## CLI reference
 
-| Command | What it does |
-| --- | --- |
-| `promptopus init [file]` | Scaffold an example suite (`--stdout`, `--force`). |
-| `promptopus run <suite> [opts]` | Run the suite, write the JSON report, print the summary table. |
-| `promptopus view [results.json]` | Serve the dashboard against a report (`--port`, `--no-open`). |
+| Command                          | What it does                                                   |
+| -------------------------------- | -------------------------------------------------------------- |
+| `promptopus init [file]`         | Scaffold an example suite (`--stdout`, `--force`).             |
+| `promptopus run <suite> [opts]`  | Run the suite, write the JSON report, print the summary table. |
+| `promptopus view [results.json]` | Serve the dashboard against a report (`--port`, `--no-open`).  |
 
 `run` options: `--out <file>`, `--providers a,b` (subset), `--max-concurrency <n>`, `--retries <n>`.
 
 ## Known limitations
 
 - **Judge cost isn't folded into per-provider cost.** Judge calls have their own cost; the report's cost
-  metrics reflect the *candidate* model only. (Judge spend is intentionally separate from candidate spend.)
+  metrics reflect the _candidate_ model only. (Judge spend is intentionally separate from candidate spend.)
 - **`json-schema` grader supports a common subset** (type, required, properties, items, enum, min/max) —
   not the full JSON Schema spec. Swap in Ajv if you need it.
 - **No response caching yet** — identical (prompt, model) pairs re-call the API across runs.
@@ -240,7 +270,7 @@ Add a variant to the `GraderSpecSchema` union and one `case` in `graders/registr
 
 ```bash
 npm install
-npm run build        # turbo: builds @promptopus/core then the dashboard
+npm run build        # turbo: builds the core package then the dashboard
 npm run typecheck    # strict TS across the monorepo
 npm test             # vitest (core)
 npm run dev --workspace @promptopus/dashboard   # dashboard dev server

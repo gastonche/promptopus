@@ -36,6 +36,7 @@ Stills for quick checks: `npx remotion still Speedrun out/f.png --frame=480 --sc
 
   Anywhere a video is published, credit Gregor Quendel (CC-BY 4.0). A fully original **CC0** synth bed
   is also available via `npm run music:synth` ([`scripts/gen-music.mjs`](scripts/gen-music.mjs)).
+
 - Fonts (Inter, JetBrains Mono) load via `@remotion/google-fonts`.
 - All visuals are original Promptopus brand assets.
 

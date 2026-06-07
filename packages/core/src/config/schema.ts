@@ -190,7 +190,12 @@ export const SuiteConfigSchema = z
   });
 
 export type BuiltinProviderSpec = z.infer<typeof BuiltinProviderSpecSchema>;
-export type CustomProviderSpec = { kind: string; name: string; model?: string; [key: string]: unknown };
+export type CustomProviderSpec = {
+  kind: string;
+  name: string;
+  model?: string;
+  [key: string]: unknown;
+};
 export type ProviderSpec = BuiltinProviderSpec | CustomProviderSpec;
 export type ProviderKind = string;
 

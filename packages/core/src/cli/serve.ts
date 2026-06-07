@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
 import { existsSync, readFileSync } from 'node:fs';
-import { dirname, extname, join, normalize, resolve } from 'node:path';
+import { dirname, extname, isAbsolute, join, normalize, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const CONTENT_TYPES: Record<string, string> = {
@@ -41,7 +41,11 @@ function openBrowser(url: string): void {
   const cmd =
     process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
   try {
-    spawn(cmd, [url], { stdio: 'ignore', detached: true, shell: process.platform === 'win32' }).unref();
+    spawn(cmd, [url], {
+      stdio: 'ignore',
+      detached: true,
+      shell: process.platform === 'win32',
+    }).unref();
   } catch {
     // best effort
   }
@@ -72,7 +76,8 @@ export function serveDashboard(opts: ServeOptions): ReturnType<typeof createServ
 
     const requested = url.pathname === '/' ? '/index.html' : url.pathname;
     let filePath = normalize(join(opts.distDir, requested));
-    if (!filePath.startsWith(opts.distDir)) {
+    const rel = relative(opts.distDir, filePath);
+    if (rel.startsWith('..') || isAbsolute(rel)) {
       res.writeHead(403);
       res.end('forbidden');
       return;
@@ -85,7 +90,9 @@ export function serveDashboard(opts: ServeOptions): ReturnType<typeof createServ
       res.end('not found');
       return;
     }
-    res.writeHead(200, { 'content-type': CONTENT_TYPES[extname(filePath)] ?? 'application/octet-stream' });
+    res.writeHead(200, {
+      'content-type': CONTENT_TYPES[extname(filePath)] ?? 'application/octet-stream',
+    });
     res.end(readFileSync(filePath));
   });
 

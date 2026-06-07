@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://promptopus.pages.dev/docs/introduction
+    about: Most "how do I…" questions are answered in the docs.
+  - name: Question / discussion
+    url: https://github.com/gastonche/promptopus/discussions
+    about: Ask a question or share how you're using Promptopus.

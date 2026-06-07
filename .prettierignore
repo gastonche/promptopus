@@ -1,0 +1,10 @@
+node_modules
+**/dist
+**/.astro
+**/out
+packages/core/dashboard
+package-lock.json
+results
+apps/dashboard/public/report.json
+apps/web/public/report.json
+*.astro

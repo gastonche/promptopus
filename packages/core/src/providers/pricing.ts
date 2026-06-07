@@ -20,7 +20,10 @@ export const PRICING: Record<string, ModelPricing> = {
   'workers-ai/@cf/meta/llama-3.1-70b-instruct': { inPerMTok: 0.293, outPerMTok: 2.253 },
   'workers-ai/@cf/meta/llama-3.2-3b-instruct': { inPerMTok: 0.027, outPerMTok: 0.201 },
   'workers-ai/@cf/meta/llama-4-scout-17b-16e-instruct': { inPerMTok: 0.27, outPerMTok: 0.85 },
-  'workers-ai/@cf/mistralai/mistral-small-3.1-24b-instruct': { inPerMTok: 0.351, outPerMTok: 0.555 },
+  'workers-ai/@cf/mistralai/mistral-small-3.1-24b-instruct': {
+    inPerMTok: 0.351,
+    outPerMTok: 0.555,
+  },
   'workers-ai/@cf/qwen/qwen2.5-coder-32b-instruct': { inPerMTok: 0.66, outPerMTok: 1.0 },
   'workers-ai/@cf/qwen/qwq-32b': { inPerMTok: 0.66, outPerMTok: 1.0 },
   'workers-ai/@cf/google/gemma-3-12b-it': { inPerMTok: 0.345, outPerMTok: 0.556 },

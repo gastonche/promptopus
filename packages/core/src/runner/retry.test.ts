@@ -19,7 +19,9 @@ describe('withRetry', () => {
 
   it('gives up after the retry budget and rethrows', async () => {
     const fn = vi.fn<() => Promise<string>>().mockRejectedValue(retryable());
-    await expect(withRetry(fn, { retries: 2, sleep: noSleep, random: () => 0 })).rejects.toThrow('429');
+    await expect(withRetry(fn, { retries: 2, sleep: noSleep, random: () => 0 })).rejects.toThrow(
+      '429',
+    );
     expect(fn).toHaveBeenCalledTimes(3);
   });
 

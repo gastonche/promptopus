@@ -17,7 +17,7 @@ providers:
     model: claude-haiku-4-5
   - name: llama-8b
     kind: openai-compat
-    model: "workers-ai/@cf/meta/llama-3.1-8b-instruct"
+    model: 'workers-ai/@cf/meta/llama-3.1-8b-instruct'
     baseUrlEnv: CF_AI_BASE_URL
     apiKeyEnv: CLOUDFLARE_API_TOKEN
 

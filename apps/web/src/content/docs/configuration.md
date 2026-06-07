@@ -12,33 +12,33 @@ never a stack trace.
 ## Top-level shape
 
 ```yaml
-name: My Eval                 # required
-description: Optional summary  # optional
-judge:                         # optional — required if any judge-* grader is used
+name: My Eval # required
+description: Optional summary # optional
+judge: # optional — required if any judge-* grader is used
   provider: openai
   model: gpt-4o
-providers:                     # required, at least one
+providers: # required, at least one
   - { name: gpt, kind: openai, model: gpt-4o-mini }
-defaults:                      # optional — shared systemPrompt / params / graders
+defaults: # optional — shared systemPrompt / params / graders
   maxTokens: 512
   graders:
     - { type: non-empty }
-cases:                         # required, at least one
+cases: # required, at least one
   - id: case-1
-    prompt: "What is the capital of {{country}}?"
+    prompt: 'What is the capital of {{country}}?'
     vars: { country: France }
     graders:
       - { type: contains, value: Paris, caseInsensitive: true }
 ```
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `name` | string | Suite name (shown in the report and dashboard). |
-| `description` | string? | Free text. |
-| `providers` | ProviderSpec[] | At least one. Names must be unique. See [Providers](/docs/providers). |
-| `judge` | JudgeConfig? | The model used by `judge-*` graders. Required if any case uses one. |
-| `defaults` | object? | Shared `systemPrompt`, `temperature`, `maxTokens`, and `graders`. |
-| `cases` | TestCase[] | At least one. Ids must be unique. |
+| Field         | Type           | Notes                                                                 |
+| ------------- | -------------- | --------------------------------------------------------------------- |
+| `name`        | string         | Suite name (shown in the report and dashboard).                       |
+| `description` | string?        | Free text.                                                            |
+| `providers`   | ProviderSpec[] | At least one. Names must be unique. See [Providers](/docs/providers). |
+| `judge`       | JudgeConfig?   | The model used by `judge-*` graders. Required if any case uses one.   |
+| `defaults`    | object?        | Shared `systemPrompt`, `temperature`, `maxTokens`, and `graders`.     |
+| `cases`       | TestCase[]     | At least one. Ids must be unique.                                     |
 
 ## `defaults`
 
@@ -46,7 +46,7 @@ Applied to every case unless the case overrides them.
 
 ```yaml
 defaults:
-  systemPrompt: "You are a terse assistant."
+  systemPrompt: 'You are a terse assistant.'
   temperature: 0.3
   maxTokens: 512
   graders:
@@ -63,27 +63,27 @@ defaults:
 
 ```yaml
 cases:
-  - id: eiffel-tower            # required, unique
-    description: Fact-dense.    # optional
-    vars:                       # optional template variables
+  - id: eiffel-tower # required, unique
+    description: Fact-dense. # optional
+    vars: # optional template variables
       title: The Eiffel Tower
-    prompt: "Title: {{title}}\n\n{{source}}"   # required
-    systemPrompt: "..."         # optional, overrides defaults.systemPrompt
-    reference: "A 330m tower…"  # optional reference / expected output
-    source: "The Eiffel Tower…" # optional grounding text (for faithfulness)
-    graders:                    # optional — falls back to defaults.graders
+    prompt: "Title: {{title}}\n\n{{source}}" # required
+    systemPrompt: '...' # optional, overrides defaults.systemPrompt
+    reference: 'A 330m tower…' # optional reference / expected output
+    source: 'The Eiffel Tower…' # optional grounding text (for faithfulness)
+    graders: # optional — falls back to defaults.graders
       - { type: judge-faithfulness, threshold: 0.7 }
 ```
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `id` | string | Unique within the suite; keys results in the report. |
-| `prompt` | string | Sent to each provider. Supports `{{var}}` interpolation. |
-| `vars` | record? | string / number / boolean values for interpolation. |
-| `systemPrompt` | string? | Overrides `defaults.systemPrompt`. Also interpolated. |
-| `reference` | string? | A reference answer; available to judges and as `{{reference}}`. |
-| `source` | string? | Source text the output should stay faithful to; available as `{{source}}`. |
-| `graders` | GraderSpec[]? | If omitted, `defaults.graders` apply. |
+| Field          | Type          | Notes                                                                      |
+| -------------- | ------------- | -------------------------------------------------------------------------- |
+| `id`           | string        | Unique within the suite; keys results in the report.                       |
+| `prompt`       | string        | Sent to each provider. Supports `{{var}}` interpolation.                   |
+| `vars`         | record?       | string / number / boolean values for interpolation.                        |
+| `systemPrompt` | string?       | Overrides `defaults.systemPrompt`. Also interpolated.                      |
+| `reference`    | string?       | A reference answer; available to judges and as `{{reference}}`.            |
+| `source`       | string?       | Source text the output should stay faithful to; available as `{{source}}`. |
+| `graders`      | GraderSpec[]? | If omitted, `defaults.graders` apply.                                      |
 
 ## Template variables
 
@@ -94,8 +94,8 @@ Prompts and system prompts support `{{name}}` interpolation. Available variables
 
 ```yaml
 - id: summarize
-  source: "Long article text…"
-  prompt: "Summarize: {{source}}"   # the source feeds both the prompt and the faithfulness grader
+  source: 'Long article text…'
+  prompt: 'Summarize: {{source}}' # the source feeds both the prompt and the faithfulness grader
 ```
 
 Referencing an undefined variable is a configuration error, caught before any API call:
@@ -118,7 +118,7 @@ graders:
   - { type: is-valid-json }
   - { type: json-schema, schema: { type: object, required: [answer] } }
   - { type: judge-faithfulness, threshold: 0.7 }
-  - { type: judge-quality, threshold: 0.7, rubric: "Reward concise answers." }
+  - { type: judge-quality, threshold: 0.7, rubric: 'Reward concise answers.' }
   - { type: latency-budget, p95Ms: 6000 }
   - { type: cost-budget, maxUsd: 0.002 }
 ```

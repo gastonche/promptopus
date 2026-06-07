@@ -13,47 +13,47 @@ providers:
   - { name: gpt-4o-mini, kind: openai, model: gpt-4o-mini }
   - name: llama-3.2-3b
     kind: openai-compat
-    model: "workers-ai/@cf/meta/llama-3.2-3b-instruct"
+    model: 'workers-ai/@cf/meta/llama-3.2-3b-instruct'
     baseUrlEnv: CF_AI_BASE_URL
     apiKeyEnv: CLOUDFLARE_API_TOKEN
   - name: llama-3.1-8b
     kind: openai-compat
-    model: "workers-ai/@cf/meta/llama-3.1-8b-instruct"
+    model: 'workers-ai/@cf/meta/llama-3.1-8b-instruct'
     baseUrlEnv: CF_AI_BASE_URL
     apiKeyEnv: CLOUDFLARE_API_TOKEN
   - name: llama-3.1-70b
     kind: openai-compat
-    model: "workers-ai/@cf/meta/llama-3.1-70b-instruct"
+    model: 'workers-ai/@cf/meta/llama-3.1-70b-instruct'
     baseUrlEnv: CF_AI_BASE_URL
     apiKeyEnv: CLOUDFLARE_API_TOKEN
   - name: llama-3.3-70b
     kind: openai-compat
-    model: "workers-ai/@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+    model: 'workers-ai/@cf/meta/llama-3.3-70b-instruct-fp8-fast'
     baseUrlEnv: CF_AI_BASE_URL
     apiKeyEnv: CLOUDFLARE_API_TOKEN
   - name: llama-4-scout
     kind: openai-compat
-    model: "workers-ai/@cf/meta/llama-4-scout-17b-16e-instruct"
+    model: 'workers-ai/@cf/meta/llama-4-scout-17b-16e-instruct'
     baseUrlEnv: CF_AI_BASE_URL
     apiKeyEnv: CLOUDFLARE_API_TOKEN
   - name: mistral-24b
     kind: openai-compat
-    model: "workers-ai/@cf/mistralai/mistral-small-3.1-24b-instruct"
+    model: 'workers-ai/@cf/mistralai/mistral-small-3.1-24b-instruct'
     baseUrlEnv: CF_AI_BASE_URL
     apiKeyEnv: CLOUDFLARE_API_TOKEN
   - name: qwen-32b
     kind: openai-compat
-    model: "workers-ai/@cf/qwen/qwen2.5-coder-32b-instruct"
+    model: 'workers-ai/@cf/qwen/qwen2.5-coder-32b-instruct'
     baseUrlEnv: CF_AI_BASE_URL
     apiKeyEnv: CLOUDFLARE_API_TOKEN
   - name: gemma-12b
     kind: openai-compat
-    model: "workers-ai/@cf/google/gemma-3-12b-it"
+    model: 'workers-ai/@cf/google/gemma-3-12b-it'
     baseUrlEnv: CF_AI_BASE_URL
     apiKeyEnv: CLOUDFLARE_API_TOKEN
   - name: qwq-32b
     kind: openai-compat
-    model: "workers-ai/@cf/qwen/qwq-32b"
+    model: 'workers-ai/@cf/qwen/qwq-32b'
     baseUrlEnv: CF_AI_BASE_URL
     apiKeyEnv: CLOUDFLARE_API_TOKEN
 

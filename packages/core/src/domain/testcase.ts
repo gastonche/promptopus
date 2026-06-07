@@ -1,9 +1,4 @@
-import type {
-  GraderSpec,
-  JudgeConfig,
-  ProviderSpec,
-  SuiteDefaults,
-} from '../config/schema.js';
+import type { GraderSpec, JudgeConfig, ProviderSpec, SuiteDefaults } from '../config/schema.js';
 
 export interface TestCase {
   id: string;

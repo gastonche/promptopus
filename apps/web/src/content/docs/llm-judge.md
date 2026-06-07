@@ -14,18 +14,18 @@ Add a top-level `judge:` block. It's required whenever any case uses a `judge-*`
 
 ```yaml
 judge:
-  provider: openai          # openai | anthropic | openai-compat | mock
+  provider: openai # openai | anthropic | openai-compat | mock
   model: gpt-4o
   # apiKeyEnv / baseUrl / baseUrlEnv as needed (same as providers)
 ```
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `provider` | enum | `openai` · `anthropic` · `openai-compat` · `mock`. |
-| `model` | string | The judge model id. |
-| `apiKeyEnv` | string? | Override the key env var. |
-| `baseUrl` / `baseUrlEnv` | string? | For `openai-compat` judges. |
-| `text` | string? | For `mock` judges only — a canned JSON verdict (see below). |
+| Field                    | Type    | Notes                                                       |
+| ------------------------ | ------- | ----------------------------------------------------------- |
+| `provider`               | enum    | `openai` · `anthropic` · `openai-compat` · `mock`.          |
+| `model`                  | string  | The judge model id.                                         |
+| `apiKeyEnv`              | string? | Override the key env var.                                   |
+| `baseUrl` / `baseUrlEnv` | string? | For `openai-compat` judges.                                 |
+| `text`                   | string? | For `mock` judges only — a canned JSON verdict (see below). |
 
 The judge is built **lazily**: it's only constructed (and only requires a key) if a judge grader is
 actually used in the run.
@@ -65,7 +65,7 @@ explicit rubric that uses the **full 0–1 range** with concrete deductions:
   hallucinations — facts the model invented that aren't in the provided text.
 - **`judge-quality`** scores subjective quality against your rubric (and optionally a `reference`).
 
-They're complementary: faithfulness asks "is it *true to the source*?", quality asks "is it *good*?"
+They're complementary: faithfulness asks "is it _true to the source_?", quality asks "is it _good_?"
 
 ## Graceful failure
 
@@ -73,8 +73,13 @@ A judge call can fail — a rate limit, a timeout, or a model that returns prose
 Promptopus never crashes the run on a judge failure. Instead the grader returns:
 
 ```json
-{ "graderId": "judge-quality(>=0.7)", "family": "judge",
-  "score": 0, "passed": false, "detail": "judge failed: judge response contained no JSON object" }
+{
+  "graderId": "judge-quality(>=0.7)",
+  "family": "judge",
+  "score": 0,
+  "passed": false,
+  "detail": "judge failed: judge response contained no JSON object"
+}
 ```
 
 The cell still records the candidate's output and its deterministic/benchmark graders; only the judge
@@ -84,7 +89,7 @@ a run with many judge failures as suspect.
 ## Bias and cost caveats
 
 - **Self-judging bias.** If the judge model is the same family as a candidate, it tends to favor that
-  candidate's style. Prefer a judge from a *different* family than your candidates when you can, and
+  candidate's style. Prefer a judge from a _different_ family than your candidates when you can, and
   note the caveat when you can't.
 - **Judge cost is separate.** Judge API calls have their own cost; the report's cost metrics reflect
   the **candidate** model only, not the judge.

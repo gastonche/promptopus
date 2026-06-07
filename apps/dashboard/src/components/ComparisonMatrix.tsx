@@ -33,10 +33,7 @@ export function ComparisonMatrix({ providers }: { providers: ProviderSummary[] }
                   <div className="text-xs text-ink/40">{row.hint}</div>
                 </td>
                 {row.cells.map((cell, ci) => (
-                  <td
-                    key={ci}
-                    className={`px-4 py-2.5 tabular-nums rounded ${cellClass(cell)}`}
-                  >
+                  <td key={ci} className={`px-4 py-2.5 tabular-nums rounded ${cellClass(cell)}`}>
                     {cell.display}
                   </td>
                 ))}

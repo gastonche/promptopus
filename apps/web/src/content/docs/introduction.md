@@ -9,7 +9,7 @@ order: 1
 the test cases, the models to compare, and how to grade each output — then run one command to produce
 a machine-readable report and a visual dashboard for comparing models side by side.
 
-It's the difference between *"it looked fine when I tried it"* and *"here are the numbers."*
+It's the difference between _"it looked fine when I tried it"_ and _"here are the numbers."_
 
 ## Why it exists
 

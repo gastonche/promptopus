@@ -21,7 +21,7 @@ providers:
   # OpenAI-compatible endpoint (e.g. a local server or Cloudflare Workers AI).
   - name: llama-8b
     kind: openai-compat
-    model: "@cf/meta/llama-3.1-8b-instruct"
+    model: '@cf/meta/llama-3.1-8b-instruct'
     baseUrlEnv: CF_AI_BASE_URL
     apiKeyEnv: CLOUDFLARE_API_TOKEN
 
@@ -29,22 +29,22 @@ providers:
 defaults:
   maxTokens: 256
   graders:
-    - type: non-empty                 # deterministic: output isn't blank
-    - type: max-length                # deterministic: stays under a length cap
+    - type: non-empty # deterministic: output isn't blank
+    - type: max-length # deterministic: stays under a length cap
       chars: 300
-    - type: judge-quality             # LLM-as-judge: is it a good answer?
+    - type: judge-quality # LLM-as-judge: is it a good answer?
       threshold: 0.7
-    - type: latency-budget            # benchmark: flag slow calls
+    - type: latency-budget # benchmark: flag slow calls
       p95Ms: 6000
 
 cases:
   - id: capital-france
-    prompt: "What is the capital of {{country}}? Answer in one short sentence."
+    prompt: 'What is the capital of {{country}}? Answer in one short sentence.'
     vars:
       country: France
     reference: Paris
     graders:
-      - type: contains                # deterministic: must mention the answer
+      - type: contains # deterministic: must mention the answer
         value: Paris
         caseInsensitive: true
       - type: non-empty
@@ -54,7 +54,7 @@ cases:
         threshold: 0.7
 
   - id: capital-japan
-    prompt: "What is the capital of {{country}}? Answer in one short sentence."
+    prompt: 'What is the capital of {{country}}? Answer in one short sentence.'
     vars:
       country: Japan
     reference: Tokyo

@@ -1,3 +1,4 @@
+import { errMessage } from '../../util.js';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 
@@ -48,7 +49,10 @@ export function registerRun(program: Command): void {
 
       let specs = suite.providers;
       if (opts.providers) {
-        const wanted = opts.providers.split(',').map((s) => s.trim()).filter(Boolean);
+        const wanted = opts.providers
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
         const known = new Set(suite.providers.map((p) => p.name));
         const unknown = wanted.filter((w) => !known.has(w));
         if (unknown.length) {
@@ -75,7 +79,9 @@ export function registerRun(program: Command): void {
           }
           note(`${symbols.bullet} plugins: ${style.purple(relative(process.cwd(), configPath))}`);
         } catch (err) {
-          note(`${symbols.fail} ${style.red(`failed to load config ${configPath}: ${(err as Error).message}`)}`);
+          note(
+            `${symbols.fail} ${style.red(`failed to load config ${configPath}: ${errMessage(err)}`)}`,
+          );
           process.exitCode = 1;
           return;
         }
@@ -102,7 +108,9 @@ export function registerRun(program: Command): void {
       const retries = Number.parseInt(opts.retries, 10);
 
       note(`${symbols.octopus} ${style.bold('Promptopus')} — ${style.purple(suite.name)}`);
-      note(`  ${suite.cases.length} cases × ${providers.length} providers, concurrency ${concurrency}`);
+      note(
+        `  ${suite.cases.length} cases × ${providers.length} providers, concurrency ${concurrency}`,
+      );
       note('');
 
       let completed = 0;
@@ -124,7 +132,8 @@ export function registerRun(program: Command): void {
             } else if (event.type === 'cell') {
               completed += 1;
               const mark = event.status === 'ok' ? symbols.ok : symbols.fail;
-              const suffix = event.status === 'error' ? style.red(` — ${event.error ?? 'error'}`) : '';
+              const suffix =
+                event.status === 'error' ? style.red(` — ${event.error ?? 'error'}`) : '';
               note(
                 `  ${style.dim(`[${completed}/${total}]`)} ${mark} ${event.caseId} ${style.dim('×')} ${event.providerName}${suffix}`,
               );
@@ -149,7 +158,9 @@ export function registerRun(program: Command): void {
       const errorCount = report.providers.reduce((a, p) => a + p.errorCount, 0);
       note('');
       if (errorCount > 0) {
-        note(`${symbols.warn} ${style.yellow(`${errorCount} cell(s) errored`)} (captured in the report)`);
+        note(
+          `${symbols.warn} ${style.yellow(`${errorCount} cell(s) errored`)} (captured in the report)`,
+        );
       }
       note(
         `${symbols.octopus} report written to ${style.purple(opts.out)} — view it with ${style.cyan(`promptopus view ${opts.out}`)}`,

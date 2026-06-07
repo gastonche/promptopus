@@ -1,3 +1,4 @@
+import { errMessage } from '../../util.js';
 import { z } from 'zod';
 
 import type { JudgeConfig, ProviderSpec } from '../../config/schema.js';
@@ -43,7 +44,7 @@ export function parseVerdict(text: string): JudgeVerdict {
     raw = JSON.parse(extractJsonObject(text));
   } catch (err) {
     if (err instanceof JudgeError) throw err;
-    throw new JudgeError(`judge response was not valid JSON: ${(err as Error).message}`);
+    throw new JudgeError(`judge response was not valid JSON: ${errMessage(err)}`);
   }
   const parsed = VerdictSchema.safeParse(raw);
   if (!parsed.success) {

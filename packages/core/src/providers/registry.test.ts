@@ -29,9 +29,9 @@ describe('createProvider', () => {
   });
 
   it('requires a base URL for openai-compat', () => {
-    expect(() =>
-      createProvider({ kind: 'openai-compat', name: 'c', model: 'm' }),
-    ).toThrowError(/base URL/);
+    expect(() => createProvider({ kind: 'openai-compat', name: 'c', model: 'm' })).toThrowError(
+      /base URL/,
+    );
   });
 
   it('builds openai-compat with an explicit baseUrl (no key needed)', () => {

@@ -1,11 +1,6 @@
 import { getCollection } from 'astro:content';
 
-export const SECTION_ORDER = [
-  'Getting started',
-  'Writing evals',
-  'Tooling',
-  'Going further',
-];
+export const SECTION_ORDER = ['Getting started', 'Writing evals', 'Tooling', 'Going further'];
 
 export interface NavItem {
   slug: string;

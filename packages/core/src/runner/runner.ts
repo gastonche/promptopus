@@ -1,3 +1,4 @@
+import { errMessage } from '../util.js';
 import type { GraderSpec } from '../config/schema.js';
 import type { Grader } from '../domain/grader.js';
 import type { GenerateOptions, Provider } from '../domain/provider.js';
@@ -64,17 +65,20 @@ async function runCell(
 ): Promise<RunResult> {
   const { testCase, provider } = cell;
   try {
-    const output = await withRetry(() => provider.generate(testCase.prompt, genOptions(testCase, suite)), {
-      ...retry,
-      onRetry: ({ attempt, delayMs }) =>
-        onEvent?.({
-          type: 'retry',
-          caseId: testCase.id,
-          providerName: provider.name,
-          attempt,
-          delayMs,
-        }),
-    });
+    const output = await withRetry(
+      () => provider.generate(testCase.prompt, genOptions(testCase, suite)),
+      {
+        ...retry,
+        onRetry: ({ attempt, delayMs }) =>
+          onEvent?.({
+            type: 'retry',
+            caseId: testCase.id,
+            providerName: provider.name,
+            attempt,
+            delayMs,
+          }),
+      },
+    );
     const graders = gradersByCase.get(testCase.id) ?? [];
     const graderResults = [];
     for (const grader of graders) {
@@ -92,11 +96,17 @@ async function runCell(
           family: grader.family,
           score: 0,
           passed: false,
-          detail: `grader error: ${(err as Error).message}`,
+          detail: `grader error: ${errMessage(err)}`,
         });
       }
     }
-    return { caseId: testCase.id, providerName: provider.name, status: 'ok', output, graderResults };
+    return {
+      caseId: testCase.id,
+      providerName: provider.name,
+      status: 'ok',
+      output,
+      graderResults,
+    };
   } catch (err) {
     const kind = err instanceof ProviderError ? err.kind : 'unknown';
     return {
@@ -104,7 +114,7 @@ async function runCell(
       providerName: provider.name,
       status: 'error',
       graderResults: [],
-      error: { message: (err as Error).message, kind },
+      error: { message: errMessage(err), kind },
     };
   }
 }

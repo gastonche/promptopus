@@ -1,3 +1,4 @@
+import { errMessage } from '../../util.js';
 import type { Grader } from '../../domain/grader.js';
 
 export function isValidJsonGrader(): Grader {
@@ -20,7 +21,7 @@ export function isValidJsonGrader(): Grader {
           family: 'deterministic',
           score: 0,
           passed: false,
-          detail: `not valid JSON: ${(err as Error).message}`,
+          detail: `not valid JSON: ${errMessage(err)}`,
         };
       }
     },

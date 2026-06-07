@@ -10,15 +10,15 @@ A provider is one `(vendor, model)` pair. You list them under `providers:` and r
 
 ## Common fields
 
-| Field | Applies to | Notes |
-| --- | --- | --- |
-| `name` | all | Unique id; the report's column header. |
-| `model` | all | Vendor model id. |
-| `kind` | all | `openai` · `anthropic` · `openai-compat` · `mock`. |
-| `temperature` | openai, anthropic, openai-compat | 0–2; overrides `defaults.temperature`. |
-| `maxTokens` | openai, anthropic, openai-compat | Output cap; overrides `defaults.maxTokens`. |
-| `apiKeyEnv` | openai, anthropic, openai-compat | Env var holding the key (per-vendor default below). |
-| `baseUrl` / `baseUrlEnv` | openai, openai-compat | Override the API base URL (literal or via env var). |
+| Field                    | Applies to                       | Notes                                               |
+| ------------------------ | -------------------------------- | --------------------------------------------------- |
+| `name`                   | all                              | Unique id; the report's column header.              |
+| `model`                  | all                              | Vendor model id.                                    |
+| `kind`                   | all                              | `openai` · `anthropic` · `openai-compat` · `mock`.  |
+| `temperature`            | openai, anthropic, openai-compat | 0–2; overrides `defaults.temperature`.              |
+| `maxTokens`              | openai, anthropic, openai-compat | Output cap; overrides `defaults.maxTokens`.         |
+| `apiKeyEnv`              | openai, anthropic, openai-compat | Env var holding the key (per-vendor default below). |
+| `baseUrl` / `baseUrlEnv` | openai, openai-compat            | Override the API base URL (literal or via env var). |
 
 Keys are read from the environment at runtime (auto-loaded from `.env`). A missing key is a **clear
 startup error** before any request is made.
@@ -57,7 +57,7 @@ Any endpoint that speaks the OpenAI Chat Completions API: a local server (Ollama
 ```yaml
 - name: llama-8b
   kind: openai-compat
-  model: "workers-ai/@cf/meta/llama-3.1-8b-instruct"
+  model: 'workers-ai/@cf/meta/llama-3.1-8b-instruct'
   baseUrlEnv: CF_AI_BASE_URL
   apiKeyEnv: CLOUDFLARE_API_TOKEN
 ```
@@ -91,8 +91,8 @@ itself, and zero-cost demos.
 ```yaml
 - name: mock-a
   kind: mock
-  model: mock        # optional, defaults to "mock"
-  text: "A fixed response."   # optional; if omitted, echoes the prompt
+  model: mock # optional, defaults to "mock"
+  text: 'A fixed response.' # optional; if omitted, echoes the prompt
 ```
 
 If `text` is set it's always returned; otherwise the prompt is echoed back. Cost is always `$0`; tokens

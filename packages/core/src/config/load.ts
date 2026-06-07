@@ -1,3 +1,4 @@
+import { errMessage } from '../util.js';
 import { readFileSync } from 'node:fs';
 import { parse as parseYaml, YAMLParseError } from 'yaml';
 
@@ -22,7 +23,7 @@ export function loadSuiteConfig(path: string): SuiteConfig {
     if (code === 'ENOENT') {
       throw new PromptopusConfigError(`Suite file not found: ${path}`);
     }
-    throw new PromptopusConfigError(`Could not read suite file ${path}: ${(err as Error).message}`);
+    throw new PromptopusConfigError(`Could not read suite file ${path}: ${errMessage(err)}`);
   }
   return parseSuiteConfig(raw, path);
 }
@@ -35,7 +36,7 @@ export function parseSuiteConfig(yamlText: string, source = '<inline>'): SuiteCo
     if (err instanceof YAMLParseError) {
       throw new PromptopusConfigError(`YAML syntax error in ${source}: ${err.message}`);
     }
-    throw new PromptopusConfigError(`Could not parse YAML in ${source}: ${(err as Error).message}`);
+    throw new PromptopusConfigError(`Could not parse YAML in ${source}: ${errMessage(err)}`);
   }
 
   if (data === null || typeof data !== 'object') {

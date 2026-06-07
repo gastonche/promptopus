@@ -31,30 +31,30 @@ Passes if `output.text.length` ≤ `chars`.
 - { type: max-length, chars: 900 }
 ```
 
-| Param | Type | Required |
-| --- | --- | --- |
-| `chars` | positive integer | yes |
+| Param   | Type             | Required |
+| ------- | ---------------- | -------- |
+| `chars` | positive integer | yes      |
 
 ### `equals`
 
 Exact match against `value`.
 
 ```yaml
-- { type: equals, value: "Paris", caseInsensitive: true, trim: true }
+- { type: equals, value: 'Paris', caseInsensitive: true, trim: true }
 ```
 
-| Param | Type | Default |
-| --- | --- | --- |
-| `value` | string | — |
-| `caseInsensitive` | boolean | false |
-| `trim` | boolean | false |
+| Param             | Type    | Default |
+| ----------------- | ------- | ------- |
+| `value`           | string  | —       |
+| `caseInsensitive` | boolean | false   |
+| `trim`            | boolean | false   |
 
 ### `contains`
 
 Passes if the output contains `value` as a substring.
 
 ```yaml
-- { type: contains, value: "Tokyo", caseInsensitive: true }
+- { type: contains, value: 'Tokyo', caseInsensitive: true }
 ```
 
 ### `regex`
@@ -64,15 +64,15 @@ config error.
 
 ```yaml
 - { type: regex, pattern: "^\\d{4}-\\d{2}-\\d{2}$" }
-- { type: regex, pattern: "error", flags: "i" }
+- { type: regex, pattern: 'error', flags: 'i' }
 ```
 
-| Param | Type | Notes |
-| --- | --- | --- |
-| `pattern` | string | JS regex source. Escape backslashes in YAML. |
-| `flags` | string? | e.g. `i`, `m`, `s`. |
+| Param     | Type    | Notes                                        |
+| --------- | ------- | -------------------------------------------- |
+| `pattern` | string  | JS regex source. Escape backslashes in YAML. |
+| `flags`   | string? | e.g. `i`, `m`, `s`.                          |
 
-> **Asserting absence.** `regex` is a positive match, so to require that markdown is *absent* use a
+> **Asserting absence.** `regex` is a positive match, so to require that markdown is _absent_ use a
 > negative-lookahead pattern, e.g. `^(?![\s\S]*(?:^\s*[-*+]\s|^#))[\s\S]+$` with flag `m`.
 
 ### `is-valid-json`
@@ -116,9 +116,9 @@ contradicting the source. Requires the case to set `source`.
 - { type: judge-faithfulness, threshold: 0.7 }
 ```
 
-| Param | Type | Default |
-| --- | --- | --- |
-| `threshold` | number 0–1 | 0.7 |
+| Param       | Type       | Default |
+| ----------- | ---------- | ------- |
+| `threshold` | number 0–1 | 0.7     |
 
 `passed` is `score ≥ threshold`. If a case has no `source`, the grader fails with an explanatory detail.
 
@@ -135,10 +135,10 @@ is shown to the judge as a strong answer.
     missing main points, or markdown. Reserve 1.0 for a flawless answer.
 ```
 
-| Param | Type | Default |
-| --- | --- | --- |
-| `rubric` | string? | a built-in general rubric |
-| `threshold` | number 0–1 | 0.7 |
+| Param       | Type       | Default                   |
+| ----------- | ---------- | ------------------------- |
+| `rubric`    | string?    | a built-in general rubric |
+| `threshold` | number 0–1 | 0.7                       |
 
 ## Cost + latency family
 
@@ -165,9 +165,9 @@ Passes if the call's computed USD cost is within `maxUsd`.
 - { type: cost-budget, maxUsd: 0.002 }
 ```
 
-| Param | Type | Required |
-| --- | --- | --- |
-| `maxUsd` | positive number | yes |
+| Param    | Type            | Required |
+| -------- | --------------- | -------- |
+| `maxUsd` | positive number | yes      |
 
 ## How scores roll up
 

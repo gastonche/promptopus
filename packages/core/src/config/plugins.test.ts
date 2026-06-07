@@ -70,8 +70,12 @@ describe('extensible registries', () => {
   });
 
   it('throws a clear error for an unregistered kind/type', () => {
-    expect(() => createProviderRegistry().create({ kind: 'nope', name: 'n' })).toThrow(/unknown provider kind "nope"/);
-    expect(() => createGraderRegistry().create({ type: 'nope' })).toThrow(/unknown grader type "nope"/);
+    expect(() => createProviderRegistry().create({ kind: 'nope', name: 'n' })).toThrow(
+      /unknown provider kind "nope"/,
+    );
+    expect(() => createGraderRegistry().create({ type: 'nope' })).toThrow(
+      /unknown grader type "nope"/,
+    );
   });
 
   it('defineConfig is an identity helper', () => {

@@ -1,6 +1,16 @@
 import { AbsoluteFill, Audio, Sequence, interpolate, staticFile, useVideoConfig } from 'remotion';
 import { CinematicBackground, FadeScene, Letterbox } from './pitch/Frame';
-import { BrandReveal, CTA, ColdOpen, Compare, Define, Extend, GraderFamilies, Proof, Run } from './pitch/scenes';
+import {
+  BrandReveal,
+  CTA,
+  ColdOpen,
+  Compare,
+  Define,
+  Extend,
+  GraderFamilies,
+  Proof,
+  Run,
+} from './pitch/scenes';
 
 export type PitchProps = {
   music: boolean;

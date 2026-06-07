@@ -41,7 +41,10 @@ describe('OpenAIProvider', () => {
   });
 
   it('throws a retryable ProviderError on HTTP 429', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ error: 'rate limited' }, 429)));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => jsonResponse({ error: 'rate limited' }, 429)),
+    );
     const provider = new OpenAIProvider({ name: 'gpt', model: 'gpt-4o-mini', apiKey: 'k' });
     await expect(provider.generate('hi')).rejects.toMatchObject({
       name: 'ProviderError',
@@ -51,10 +54,43 @@ describe('OpenAIProvider', () => {
   });
 
   it('marks 4xx (non-429) as non-retryable', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ error: 'bad key' }, 401)));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => jsonResponse({ error: 'bad key' }, 401)),
+    );
     const provider = new OpenAIProvider({ name: 'gpt', model: 'gpt-4o-mini', apiKey: 'k' });
     await expect(provider.generate('hi')).rejects.toSatisfy(
       (e: unknown) => e instanceof ProviderError && e.retryable === false && e.status === 401,
     );
+  });
+
+  it('temperature/maxTokens precedence: a provider-level value overrides the call default, otherwise the default applies', async () => {
+    async function bodyFor(
+      config: { temperature?: number; maxTokens?: number },
+      opts: { temperature?: number; maxTokens?: number },
+    ): Promise<Record<string, unknown>> {
+      const fetchMock = vi.fn(async () =>
+        jsonResponse({ choices: [{ message: { content: 'x' } }], usage: {} }),
+      );
+      vi.stubGlobal('fetch', fetchMock);
+      await new OpenAIProvider({
+        name: 'gpt',
+        model: 'gpt-4o-mini',
+        apiKey: 'k',
+        ...config,
+      }).generate('hi', opts);
+      const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+      return JSON.parse(init.body as string) as Record<string, unknown>;
+    }
+
+    // no provider value → the suite default (passed via opts) is used
+    expect(await bodyFor({}, { temperature: 0.3, maxTokens: 256 })).toMatchObject({
+      temperature: 0.3,
+      max_tokens: 256,
+    });
+    // provider value present → it overrides the default
+    expect(
+      await bodyFor({ temperature: 0.9, maxTokens: 64 }, { temperature: 0.3, maxTokens: 256 }),
+    ).toMatchObject({ temperature: 0.9, max_tokens: 64 });
   });
 });

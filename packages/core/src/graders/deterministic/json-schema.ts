@@ -1,3 +1,4 @@
+import { errMessage } from '../../util.js';
 import type { GraderSpec } from '../../config/schema.js';
 import type { Grader } from '../../domain/grader.js';
 
@@ -81,7 +82,7 @@ export function jsonSchemaGrader(spec: Spec): Grader {
           family: 'deterministic',
           score: 0,
           passed: false,
-          detail: `output is not valid JSON: ${(err as Error).message}`,
+          detail: `output is not valid JSON: ${errMessage(err)}`,
         };
       }
       const errors: string[] = [];

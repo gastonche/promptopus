@@ -10,9 +10,27 @@ const ICON: Record<string, React.ReactNode> = {
 };
 
 const CARDS = [
-  { title: 'Deterministic', tag: 'free · instant', accent: C.pass, icon: 'check', items: ['equals', 'contains', 'regex', 'json-schema'] },
-  { title: 'LLM-as-judge', tag: 'faithfulness · quality', accent: C.pop400, icon: 'scale', items: ['judge-faithfulness', 'judge-quality'] },
-  { title: 'Cost + latency', tag: 'budgets · p50/p95', accent: C.warn, icon: 'gauge', items: ['latency-budget', 'cost-budget'] },
+  {
+    title: 'Deterministic',
+    tag: 'free · instant',
+    accent: C.pass,
+    icon: 'check',
+    items: ['equals', 'contains', 'regex', 'json-schema'],
+  },
+  {
+    title: 'LLM-as-judge',
+    tag: 'faithfulness · quality',
+    accent: C.pop400,
+    icon: 'scale',
+    items: ['judge-faithfulness', 'judge-quality'],
+  },
+  {
+    title: 'Cost + latency',
+    tag: 'budgets · p50/p95',
+    accent: C.warn,
+    icon: 'gauge',
+    items: ['latency-budget', 'cost-budget'],
+  },
 ];
 
 const Card: React.FC<{ index: number; data: (typeof CARDS)[number] }> = ({ index, data }) => {
@@ -44,14 +62,33 @@ const Card: React.FC<{ index: number; data: (typeof CARDS)[number] }> = ({ index
           justifyContent: 'center',
         }}
       >
-        <svg width={34} height={34} viewBox="0 0 24 24" fill="none" stroke={data.accent} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width={34}
+          height={34}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={data.accent}
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           {ICON[data.icon]}
         </svg>
       </div>
-      <div style={{ marginTop: 22, color: data.accent, fontFamily: mono, fontSize: 22, fontWeight: 700 }}>
+      <div
+        style={{
+          marginTop: 22,
+          color: data.accent,
+          fontFamily: mono,
+          fontSize: 22,
+          fontWeight: 700,
+        }}
+      >
         {data.tag}
       </div>
-      <div style={{ marginTop: 6, color: '#fff', fontSize: 38, fontWeight: 800, letterSpacing: -1 }}>
+      <div
+        style={{ marginTop: 6, color: '#fff', fontSize: 38, fontWeight: 800, letterSpacing: -1 }}
+      >
         {data.title}
       </div>
       <div style={{ marginTop: 18, display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -69,8 +106,17 @@ export const GraderFamilies: React.FC = () => {
   const frame = useCurrentFrame();
   const t = fadeUp(frame, 2, 14, 24);
   return (
-    <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', fontFamily: sans, padding: 70 }}>
-      <div style={{ textAlign: 'center', opacity: t.opacity, transform: t.transform, marginBottom: 44 }}>
+    <AbsoluteFill
+      style={{ alignItems: 'center', justifyContent: 'center', fontFamily: sans, padding: 70 }}
+    >
+      <div
+        style={{
+          textAlign: 'center',
+          opacity: t.opacity,
+          transform: t.transform,
+          marginBottom: 44,
+        }}
+      >
         <div style={{ fontSize: 64, fontWeight: 900, color: '#fff', letterSpacing: -2 }}>
           Three grader families.
         </div>

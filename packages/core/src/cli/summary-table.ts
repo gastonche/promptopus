@@ -18,7 +18,10 @@ function buildRows(providers: ProviderSummary[]): Row[] {
     {
       label: 'Pass rate',
       better: 'high',
-      values: providers.map((p) => ({ display: `${Math.round(p.passRate * 100)}%`, numeric: p.passRate })),
+      values: providers.map((p) => ({
+        display: `${Math.round(p.passRate * 100)}%`,
+        numeric: p.passRate,
+      })),
     },
     {
       label: 'Score · deterministic',
@@ -38,22 +41,34 @@ function buildRows(providers: ProviderSummary[]): Row[] {
     {
       label: 'Cost · total',
       better: 'low',
-      values: providers.map((p) => ({ display: `$${p.cost.totalUsd.toFixed(4)}`, numeric: p.cost.totalUsd })),
+      values: providers.map((p) => ({
+        display: `$${p.cost.totalUsd.toFixed(4)}`,
+        numeric: p.cost.totalUsd,
+      })),
     },
     {
       label: 'Cost · mean/call',
       better: 'low',
-      values: providers.map((p) => ({ display: `$${p.cost.meanUsd.toFixed(4)}`, numeric: p.cost.meanUsd })),
+      values: providers.map((p) => ({
+        display: `$${p.cost.meanUsd.toFixed(4)}`,
+        numeric: p.cost.meanUsd,
+      })),
     },
     {
       label: 'Latency · p50',
       better: 'low',
-      values: providers.map((p) => ({ display: `${Math.round(p.latency.p50Ms)}ms`, numeric: p.latency.p50Ms })),
+      values: providers.map((p) => ({
+        display: `${Math.round(p.latency.p50Ms)}ms`,
+        numeric: p.latency.p50Ms,
+      })),
     },
     {
       label: 'Latency · p95',
       better: 'low',
-      values: providers.map((p) => ({ display: `${Math.round(p.latency.p95Ms)}ms`, numeric: p.latency.p95Ms })),
+      values: providers.map((p) => ({
+        display: `${Math.round(p.latency.p95Ms)}ms`,
+        numeric: p.latency.p95Ms,
+      })),
     },
     {
       label: 'Errors',

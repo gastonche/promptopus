@@ -45,7 +45,11 @@ describe('judge graders', () => {
       { type: 'judge-quality', threshold: 0.7 },
       { judge: judgeReturning('{"score":0.9,"reasoning":"clear and correct"}') },
     );
-    const result = await grader.grade({ testCase, output: out('Paris, 1889.'), provider: { name: 'p', model: 'm' } });
+    const result = await grader.grade({
+      testCase,
+      output: out('Paris, 1889.'),
+      provider: { name: 'p', model: 'm' },
+    });
     expect(result.passed).toBe(true);
     expect(result.score).toBe(0.9);
     expect(result.family).toBe('judge');
@@ -57,7 +61,11 @@ describe('judge graders', () => {
       { judge: judgeReturning('{"score":1}') },
     );
     const noSource: TestCase = { id: 'n', prompt: 'p', graders: [] };
-    const result = await grader.grade({ testCase: noSource, output: out('x'), provider: { name: 'p', model: 'm' } });
+    const result = await grader.grade({
+      testCase: noSource,
+      output: out('x'),
+      provider: { name: 'p', model: 'm' },
+    });
     expect(result.passed).toBe(false);
     expect(result.detail).toMatch(/no source/);
   });
@@ -72,7 +80,11 @@ describe('judge graders', () => {
       { type: 'judge-quality', threshold: 0.7 },
       { judge: new JudgeClient(flaky) },
     );
-    const result = await grader.grade({ testCase, output: out('x'), provider: { name: 'p', model: 'm' } });
+    const result = await grader.grade({
+      testCase,
+      output: out('x'),
+      provider: { name: 'p', model: 'm' },
+    });
     expect(result.passed).toBe(false);
     expect(result.detail).toMatch(/judge failed/);
   });
@@ -82,7 +94,11 @@ describe('judge graders', () => {
       { type: 'judge-quality', threshold: 0.7 },
       { judge: judgeReturning('totally not json') },
     );
-    const result = await grader.grade({ testCase, output: out('x'), provider: { name: 'p', model: 'm' } });
+    const result = await grader.grade({
+      testCase,
+      output: out('x'),
+      provider: { name: 'p', model: 'm' },
+    });
     expect(result.passed).toBe(false);
     expect(result.detail).toMatch(/judge failed/);
   });

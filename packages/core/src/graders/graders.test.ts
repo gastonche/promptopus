@@ -32,13 +32,22 @@ describe('deterministic graders', () => {
   });
 
   it('equals respects trim + caseInsensitive', async () => {
-    expect((await grade({ type: 'equals', value: 'Paris', caseInsensitive: true, trim: true }, '  paris ')).passed).toBe(true);
+    expect(
+      (
+        await grade(
+          { type: 'equals', value: 'Paris', caseInsensitive: true, trim: true },
+          '  paris ',
+        )
+      ).passed,
+    ).toBe(true);
     expect((await grade({ type: 'equals', value: 'Paris' }, 'paris')).passed).toBe(false);
   });
 
   it('contains', async () => {
     expect((await grade({ type: 'contains', value: 'Tokyo' }, 'In Tokyo today')).passed).toBe(true);
-    expect((await grade({ type: 'contains', value: 'tokyo', caseInsensitive: true }, 'TOKYO')).passed).toBe(true);
+    expect(
+      (await grade({ type: 'contains', value: 'tokyo', caseInsensitive: true }, 'TOKYO')).passed,
+    ).toBe(true);
   });
 
   it('regex', async () => {
@@ -62,18 +71,30 @@ describe('deterministic graders', () => {
 
 describe('benchmark graders', () => {
   it('latency-budget passes under budget, fails over with partial score', async () => {
-    const ok = await gradeOutput({ type: 'latency-budget', p95Ms: 1000 }, out('x', { latencyMs: 500 }));
+    const ok = await gradeOutput(
+      { type: 'latency-budget', p95Ms: 1000 },
+      out('x', { latencyMs: 500 }),
+    );
     expect(ok.passed).toBe(true);
     expect(ok.score).toBe(1);
-    const slow = await gradeOutput({ type: 'latency-budget', maxMs: 1000 }, out('x', { latencyMs: 2000 }));
+    const slow = await gradeOutput(
+      { type: 'latency-budget', maxMs: 1000 },
+      out('x', { latencyMs: 2000 }),
+    );
     expect(slow.passed).toBe(false);
     expect(slow.score).toBeCloseTo(0.5, 5);
   });
 
   it('cost-budget compares computed USD cost', async () => {
-    const ok = await gradeOutput({ type: 'cost-budget', maxUsd: 0.01 }, out('x', { costUsd: 0.004 }));
+    const ok = await gradeOutput(
+      { type: 'cost-budget', maxUsd: 0.01 },
+      out('x', { costUsd: 0.004 }),
+    );
     expect(ok.passed).toBe(true);
-    const over = await gradeOutput({ type: 'cost-budget', maxUsd: 0.001 }, out('x', { costUsd: 0.004 }));
+    const over = await gradeOutput(
+      { type: 'cost-budget', maxUsd: 0.001 },
+      out('x', { costUsd: 0.004 }),
+    );
     expect(over.passed).toBe(false);
   });
 });
@@ -81,6 +102,8 @@ describe('benchmark graders', () => {
 describe('grader registry guards', () => {
   it('judge graders require a configured judge model', () => {
     expect(() => createGrader({ type: 'judge-quality', threshold: 0.7 })).toThrowError(GraderError);
-    expect(() => createGrader({ type: 'judge-faithfulness', threshold: 0.7 })).toThrowError(/judge/);
+    expect(() => createGrader({ type: 'judge-faithfulness', threshold: 0.7 })).toThrowError(
+      /judge/,
+    );
   });
 });

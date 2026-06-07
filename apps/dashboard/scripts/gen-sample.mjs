@@ -18,21 +18,24 @@ const CASES = [
     prompt: 'Summarize the source in 3-5 sentences of plain prose.',
     source:
       'The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris. It is named after engineer Gustave Eiffel, whose company designed and built the tower from 1887 to 1889 as the centerpiece of the 1889 World’s Fair.',
-    reference: 'A wrought-iron tower in Paris, built 1887–1889 by Gustave Eiffel for the 1889 World’s Fair.',
+    reference:
+      'A wrought-iron tower in Paris, built 1887–1889 by Gustave Eiffel for the 1889 World’s Fair.',
   },
   {
     id: 'photosynthesis',
     prompt: 'Summarize the source in 3-5 sentences of plain prose.',
     source:
       'Photosynthesis is the process by which green plants, algae, and some bacteria convert light energy into chemical energy. Using chlorophyll, they transform carbon dioxide and water into glucose and oxygen. The process underpins nearly all food chains on Earth.',
-    reference: 'Plants and some microbes use chlorophyll to turn CO2, water, and light into glucose and oxygen.',
+    reference:
+      'Plants and some microbes use chlorophyll to turn CO2, water, and light into glucose and oxygen.',
   },
   {
     id: 'markets',
     prompt: 'Summarize the source in 3-5 sentences of plain prose.',
     source:
       'Global markets rose modestly on Tuesday as investors weighed cooling inflation data against signals from central banks. Technology shares led gains, while energy lagged on softer crude prices. Analysts cautioned that volatility could return ahead of next week’s rate decision.',
-    reference: 'Markets edged up on cooling inflation; tech led, energy lagged, with caution before a rate decision.',
+    reference:
+      'Markets edged up on cooling inflation; tech led, energy lagged, with caution before a rate decision.',
   },
 ];
 
@@ -42,9 +45,30 @@ function grader(graderId, family, score, passed, detail) {
 
 // per (case,provider) tuned outputs so the matrix shows clear winners/losers
 const PROFILE = {
-  'gpt-4o-mini': { latency: [780, 910, 850], cost: 0.00062, tokInOut: [620, 96], faith: 0.9, quality: 0.88, len: 410 },
-  haiku: { latency: [1480, 1720, 1610], cost: 0.00131, tokInOut: [640, 102], faith: 0.95, quality: 0.93, len: 430 },
-  'llama-8b': { latency: [640, 720, 690], cost: 0.00006, tokInOut: [630, 120], faith: 0.74, quality: 0.69, len: 560 },
+  'gpt-4o-mini': {
+    latency: [780, 910, 850],
+    cost: 0.00062,
+    tokInOut: [620, 96],
+    faith: 0.9,
+    quality: 0.88,
+    len: 410,
+  },
+  haiku: {
+    latency: [1480, 1720, 1610],
+    cost: 0.00131,
+    tokInOut: [640, 102],
+    faith: 0.95,
+    quality: 0.93,
+    len: 430,
+  },
+  'llama-8b': {
+    latency: [640, 720, 690],
+    cost: 0.00006,
+    tokInOut: [630, 120],
+    faith: 0.74,
+    quality: 0.69,
+    len: 560,
+  },
 };
 
 const SUMMARIES = {
@@ -92,7 +116,13 @@ CASES.forEach((c, ci) => {
       output: { text, tokensIn, tokensOut, latencyMs, costUsd },
       graderResults: [
         grader('non-empty', 'deterministic', 1, true, `output has ${text.length} chars`),
-        grader('max-length(520)', 'deterministic', lenOk ? 1 : 0, lenOk, `${text.length}/520 chars`),
+        grader(
+          'max-length(520)',
+          'deterministic',
+          lenOk ? 1 : 0,
+          lenOk,
+          `${text.length}/520 chars`,
+        ),
         grader(
           'judge-faithfulness(>=0.7)',
           'judge',
@@ -124,5 +154,5 @@ const report = buildReport(suite, PROVIDERS, results, '2026-06-06T12:00:00.000Z'
 
 const outDir = resolve(here, '..', 'public');
 mkdirSync(outDir, { recursive: true });
-writeFileSync(resolve(outDir, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
-console.log('wrote public/report.json');
+writeFileSync(resolve(outDir, 'sample-report.json'), `${JSON.stringify(report, null, 2)}\n`);
+console.log('wrote public/sample-report.json');

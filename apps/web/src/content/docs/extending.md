@@ -34,7 +34,10 @@ export default defineConfig({
             authorization: `Bearer ${process.env[spec.apiKeyEnv ?? 'COHERE_API_KEY']}`,
             'content-type': 'application/json',
           },
-          body: JSON.stringify({ model: spec.model, messages: [{ role: 'user', content: prompt }] }),
+          body: JSON.stringify({
+            model: spec.model,
+            messages: [{ role: 'user', content: prompt }],
+          }),
         });
         const data = await res.json();
         const text = data.message.content[0].text;
@@ -80,11 +83,11 @@ providers:
   - { name: cohere-cmd, kind: cohere, model: command-r, apiKeyEnv: COHERE_API_KEY }
 cases:
   - id: c1
-    prompt: "Summarize: {{source}}"
-    source: "…"
+    prompt: 'Summarize: {{source}}'
+    source: '…'
     graders:
       - { type: non-empty }
-      - { type: word-count, max: 60 }   # your custom grader
+      - { type: word-count, max: 60 } # your custom grader
 ```
 
 ```bash
@@ -108,12 +111,7 @@ Throw a `ProviderError` with `retryable: true` for transient failures so the run
 For full control, drive the harness from code. Everything is exported from `promptopus`:
 
 ```ts
-import {
-  loadSuite,
-  runSuite,
-  createProviderRegistry,
-  createGraderRegistry,
-} from 'promptopus';
+import { loadSuite, runSuite, createProviderRegistry, createGraderRegistry } from 'promptopus';
 
 const suite = loadSuite('my.suite.yaml');
 

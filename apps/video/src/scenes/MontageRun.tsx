@@ -60,7 +60,13 @@ export const MontageRun: React.FC = () => {
           {PROVIDERS.map((p) => (
             <div
               key={p}
-              style={{ width: 150, textAlign: 'center', fontFamily: mono, fontSize: 24, color: C.pop300 }}
+              style={{
+                width: 150,
+                textAlign: 'center',
+                fontFamily: mono,
+                fontSize: 24,
+                color: C.pop300,
+              }}
             >
               {p}
             </div>
@@ -69,7 +75,15 @@ export const MontageRun: React.FC = () => {
 
         {CASES.map((c, row) => (
           <div key={c} style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <div style={{ width: 320, textAlign: 'right', fontFamily: mono, fontSize: 26, color: '#bdb7d6' }}>
+            <div
+              style={{
+                width: 320,
+                textAlign: 'right',
+                fontFamily: mono,
+                fontSize: 26,
+                color: '#bdb7d6',
+              }}
+            >
               {c}
             </div>
             {PROVIDERS.map((_, col) => (

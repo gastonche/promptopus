@@ -1,3 +1,4 @@
+import { errMessage } from '../util.js';
 import type { GenerateOptions, GenerateResult, Provider } from '../domain/provider.js';
 import { parseRetryAfter, ProviderError } from './errors.js';
 import { computeCostUsd } from './pricing.js';
@@ -58,7 +59,8 @@ export class OpenAIProvider implements Provider {
     const latencyMs = Math.round(performance.now() - start);
 
     const text = data.choices?.[0]?.message?.content ?? '';
-    const tokensIn = data.usage?.prompt_tokens ?? estimateTokens(`${systemPrompt ?? ''}\n${prompt}`);
+    const tokensIn =
+      data.usage?.prompt_tokens ?? estimateTokens(`${systemPrompt ?? ''}\n${prompt}`);
     const tokensOut = data.usage?.completion_tokens ?? estimateTokens(text);
     const costUsd = computeCostUsd(this.model, tokensIn, tokensOut);
 
@@ -81,7 +83,9 @@ export class OpenAIProvider implements Provider {
     } catch (err) {
       const aborted = err instanceof Error && err.name === 'AbortError';
       throw new ProviderError(
-        aborted ? `request timed out after ${this.timeoutMs}ms` : `network error: ${(err as Error).message}`,
+        aborted
+          ? `request timed out after ${this.timeoutMs}ms`
+          : `network error: ${errMessage(err)}`,
         { kind: aborted ? 'timeout' : 'network', retryable: true, cause: err },
       );
     } finally {
@@ -91,12 +95,15 @@ export class OpenAIProvider implements Provider {
     if (!response.ok) {
       const detail = await response.text().catch(() => '');
       const retryAfterMs = parseRetryAfter(response.headers.get('retry-after'));
-      throw new ProviderError(`HTTP ${response.status} from ${this.name}: ${detail.slice(0, 300)}`, {
-        kind: 'http',
-        status: response.status,
-        retryable: RETRYABLE_STATUS.has(response.status),
-        ...(retryAfterMs !== undefined ? { retryAfterMs } : {}),
-      });
+      throw new ProviderError(
+        `HTTP ${response.status} from ${this.name}: ${detail.slice(0, 300)}`,
+        {
+          kind: 'http',
+          status: response.status,
+          retryable: RETRYABLE_STATUS.has(response.status),
+          ...(retryAfterMs !== undefined ? { retryAfterMs } : {}),
+        },
+      );
     }
 
     try {

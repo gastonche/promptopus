@@ -12,9 +12,20 @@ const BEAT = 0.5; // 120 BPM
 const BAR = BEAT * 4; // 2s
 
 const NOTE = {
-  A2: 110.0, F2: 87.31, C3: 130.81, G2: 98.0,
-  C4: 261.63, E4: 329.63, F4: 349.23, G4: 392.0, A4: 440.0,
-  B4: 493.88, C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99,
+  A2: 110.0,
+  F2: 87.31,
+  C3: 130.81,
+  G2: 98.0,
+  C4: 261.63,
+  E4: 329.63,
+  F4: 349.23,
+  G4: 392.0,
+  A4: 440.0,
+  B4: 493.88,
+  C5: 523.25,
+  D5: 587.33,
+  E5: 659.25,
+  G5: 783.99,
 };
 
 // vi–IV–I–V in C major (uplifting), one chord per 2s bar.
@@ -93,7 +104,7 @@ for (let i = 0; i < N; i++) {
   buf[i] = Math.tanh(buf[i] * 1.1);
   if (Math.abs(buf[i]) > peak) peak = Math.abs(buf[i]);
 }
-const norm = (0.71 / (peak || 1));
+const norm = 0.71 / (peak || 1);
 const fadeIn = 0.3 * SR;
 const fadeOut = 1.6 * SR;
 for (let i = 0; i < N; i++) {

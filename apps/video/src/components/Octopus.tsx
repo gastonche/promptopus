@@ -10,7 +10,9 @@ export const Octopus: React.FC<{ size?: number; float?: boolean; glow?: boolean 
   const sway = float ? Math.sin(frame / 16) * 1.2 : 0;
 
   return (
-    <div style={{ position: 'relative', width: size, height: size, transform: `translateY(${bob}px)` }}>
+    <div
+      style={{ position: 'relative', width: size, height: size, transform: `translateY(${bob}px)` }}
+    >
       {glow && (
         <div
           style={{

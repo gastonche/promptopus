@@ -22,8 +22,9 @@ function EmptyState({ onFile }: { onFile: (file: File) => void }) {
       <h2 className="text-xl font-semibold text-pop-700">No report loaded</h2>
       <p className="max-w-sm text-sm text-ink/50">
         Run <code className="rounded bg-pop-600/10 px-1.5 py-0.5 text-pop-700">promptopus run</code>{' '}
-        to produce a <code className="rounded bg-pop-600/10 px-1.5 py-0.5 text-pop-700">results.json</code>,
-        then load it here.
+        to produce a{' '}
+        <code className="rounded bg-pop-600/10 px-1.5 py-0.5 text-pop-700">results.json</code>, then
+        load it here.
       </p>
       <label className="cursor-pointer rounded-lg bg-pop-700 px-4 py-2 text-sm font-semibold text-white hover:bg-pop-600">
         Load results.json

@@ -52,12 +52,12 @@ rather than silently missing.
 
 The app fetches `report.json` relative to where it's served. `promptopus view <file>` wires your chosen
 file to that path. Reports are plain JSON conforming to the `Report` type, so anything that produces a
-valid report (including a custom pipeline using `@promptopus/core`'s `buildReport`) can be visualized.
+valid report (including a custom pipeline using `promptopus`'s `buildReport`) can be visualized.
 
 ## Types are shared
 
 The dashboard imports the `Report`, `ProviderSummary`, and `RunResult` types directly from
-`@promptopus/core`, so the artifact shape has a single source of truth — the report you generate and
+`promptopus`, so the artifact shape has a single source of truth — the report you generate and
 the UI that renders it can't drift.
 
 Next: [Extending](/docs/extending).

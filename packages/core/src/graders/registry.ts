@@ -65,7 +65,9 @@ export function createGraderRegistry(): GraderRegistry {
     .register('json-schema', (s) => jsonSchemaGrader(s as Spec<'json-schema'>))
     .register('latency-budget', (s) => latencyBudgetGrader(s as Spec<'latency-budget'>))
     .register('cost-budget', (s) => costBudgetGrader(s as Spec<'cost-budget'>))
-    .register('judge-faithfulness', (s, d) => faithfulnessGrader(s as Spec<'judge-faithfulness'>, d.judge))
+    .register('judge-faithfulness', (s, d) =>
+      faithfulnessGrader(s as Spec<'judge-faithfulness'>, d.judge),
+    )
     .register('judge-quality', (s, d) => qualityGrader(s as Spec<'judge-quality'>, d.judge));
 }
 

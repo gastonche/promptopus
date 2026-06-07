@@ -31,7 +31,9 @@ export function registerView(program: Command): void {
       if (!distDir) {
         note(`${symbols.fail} ${style.red('dashboard build not found.')}`);
         note(`  build it once:  ${style.cyan('npm run build --workspace @promptopus/dashboard')}`);
-        note(`  or set ${style.purple('PROMPTOPUS_DASHBOARD_DIST')} to a built dashboard directory.`);
+        note(
+          `  or set ${style.purple('PROMPTOPUS_DASHBOARD_DIST')} to a built dashboard directory.`,
+        );
         process.exitCode = 1;
         return;
       }

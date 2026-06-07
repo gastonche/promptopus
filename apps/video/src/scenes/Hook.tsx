@@ -31,11 +31,17 @@ export const Hook: React.FC = () => {
   const cur = NAMES[((i % NAMES.length) + NAMES.length) % NAMES.length];
   const nxt = NAMES[(((i + 1) % NAMES.length) + NAMES.length) % NAMES.length];
 
-  const reelIn = interpolate(frame, [0, 8], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const reelIn = interpolate(frame, [0, 8], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
   const reelOut = fadeOut(frame, 56, 9);
   const reelOpacity = reelIn * reelOut;
   // light constant motion blur to keep the scroll smooth, plus a growing exit-blur
-  const exitBlur = interpolate(frame, [52, 66], [0, 14], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const exitBlur = interpolate(frame, [52, 66], [0, 14], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
   const blur = (frame >= REEL_START ? 4 : 0) + exitBlur;
 
   const kicker =
@@ -45,8 +51,14 @@ export const Hook: React.FC = () => {
   // --- payoff ---
   const slam = pop(frame, fps, 68, { damping: 11, stiffness: 175, mass: 0.7 });
   const slamScale = interpolate(slam, [0, 1], [0.7, 1]);
-  const slamOpacity = interpolate(frame, [66, 72], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-  const flash = interpolate(frame, [66, 68, 78], [0, 0.7, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const slamOpacity = interpolate(frame, [66, 72], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const flash = interpolate(frame, [66, 68, 78], [0, 0.7, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
 
   const Name: React.FC<{ text: string; y: number }> = ({ text, y }) => (
     <div
@@ -89,7 +101,8 @@ export const Hook: React.FC = () => {
               overflow: 'hidden',
               opacity: reelOpacity,
               maskImage: 'linear-gradient(to bottom, transparent, #000 24%, #000 76%, transparent)',
-              WebkitMaskImage: 'linear-gradient(to bottom, transparent, #000 24%, #000 76%, transparent)',
+              WebkitMaskImage:
+                'linear-gradient(to bottom, transparent, #000 24%, #000 76%, transparent)',
             }}
           >
             <Name text={cur} y={-frac * ROW_H} />
@@ -98,8 +111,17 @@ export const Hook: React.FC = () => {
         </div>
       )}
 
-      <div style={{ opacity: slamOpacity, transform: `scale(${slamScale})`, textAlign: 'center', lineHeight: 1.0 }}>
-        <div style={{ fontSize: 150, fontWeight: 900, color: C.white, letterSpacing: -4 }}>STOP</div>
+      <div
+        style={{
+          opacity: slamOpacity,
+          transform: `scale(${slamScale})`,
+          textAlign: 'center',
+          lineHeight: 1.0,
+        }}
+      >
+        <div style={{ fontSize: 150, fontWeight: 900, color: C.white, letterSpacing: -4 }}>
+          STOP
+        </div>
         <div
           style={{
             fontSize: 150,
