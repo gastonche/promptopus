@@ -21,6 +21,9 @@ dist/
 *.log
 npm-debug.log*
 
+# Default CLI run output at repo root (the demo command writes this)
+/results.json
+
 # Test / coverage
 coverage/
 
