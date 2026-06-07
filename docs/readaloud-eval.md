@@ -43,7 +43,7 @@ Sorted by pass rate (share of all grader checks passed), then cost. 6 cases each
 | mistral-small-24b             | 99%     | 0.98     | 1.00 | $0.0008        | 2507 ms    | 4576 ms     |
 | gemma-3-12b                   | 97%     | 1.00     | 1.00 | $0.0008        | 1394 ms    | **1665 ms** |
 | llama-4-scout-17b             | 97%     | 0.98     | 0.99 | $0.0009        | 1709 ms    | 1944 ms     |
-| qwen2.5-coder-32b                   | 96%     | 0.98     | 1.00 | $0.0015        | 3176 ms    | 3682 ms     |
+| qwen2.5-coder-32b             | 96%     | 0.98     | 1.00 | $0.0015        | 3176 ms    | 3682 ms     |
 | llama-3.1-70b                 | 96%     | 1.00     | 0.99 | $0.0018        | 3983 ms    | 4738 ms     |
 | llama-3.2-3b                  | 94%     | 0.91     | 1.00 | **$0.0002**    | **749 ms** | 1370 ms     |
 | gpt-4o-mini (OpenAI)          | 92%     | 1.00     | 0.98 | $0.0006        | 1960 ms    | 3859 ms     |
