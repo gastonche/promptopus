@@ -15,7 +15,13 @@ function caseStats(report: Report, caseId: string): { passRate: number; errors: 
   };
 }
 
-function EmptyState({ onFile }: { onFile: (file: File) => void }) {
+function isReport(value: unknown): value is Report {
+  if (typeof value !== 'object' || value === null) return false;
+  const r = value as Record<string, unknown>;
+  return Array.isArray(r.providers) && Array.isArray(r.results) && Array.isArray(r.cases);
+}
+
+function EmptyState({ onFile, error }: { onFile: (file: File) => void; error?: string | null }) {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
       <OctopusMark size={72} />
@@ -38,6 +44,7 @@ function EmptyState({ onFile }: { onFile: (file: File) => void }) {
           }}
         />
       </label>
+      {error && <p className="max-w-sm text-sm text-red-600">{error}</p>}
     </div>
   );
 }
@@ -45,6 +52,7 @@ function EmptyState({ onFile }: { onFile: (file: File) => void }) {
 export default function App() {
   const [report, setReport] = useState<Report | null>(null);
   const [selectedCase, setSelectedCase] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('report.json')
@@ -57,11 +65,18 @@ export default function App() {
   }, []);
 
   const loadFile = (file: File) => {
-    file.text().then((text) => {
-      const data = JSON.parse(text) as Report;
-      setReport(data);
-      setSelectedCase(data.cases[0]?.id ?? null);
-    });
+    file
+      .text()
+      .then((text) => {
+        const data: unknown = JSON.parse(text);
+        if (!isReport(data)) throw new Error('this file is not a Promptopus report');
+        setReport(data);
+        setSelectedCase(data.cases[0]?.id ?? null);
+        setError(null);
+      })
+      .catch((e: unknown) =>
+        setError(`Could not load report: ${e instanceof Error ? e.message : String(e)}`),
+      );
   };
 
   const activeCase = useMemo(
@@ -91,7 +106,7 @@ export default function App() {
 
       <main className={`mx-auto ${containerW} px-6 py-8`}>
         {!report ? (
-          <EmptyState onFile={loadFile} />
+          <EmptyState onFile={loadFile} error={error} />
         ) : (
           <div className="space-y-10">
             <section>
