@@ -130,25 +130,32 @@ flowchart LR
 Most real suites combine all three: deterministic gates for structure, judges for quality, budgets for
 the economics.
 
-## Dogfood: the ReadAloud summarizer eval
+## Dogfood: the ReadAloud summarizer benchmark
 
-Promptopus evaluates the **TL;DR summarization** feature of [ReadAloud](https://github.com/gastonche/read-aloud) — using
-its *exact* production prompt and constraints — to answer a real product question: **is the cheap open
-8B model ReadAloud ships as good as a frontier small model?**
+Promptopus benchmarks the **TL;DR summarization** feature of
+[ReadAloud](https://github.com/gastonche/read-aloud) — using its *exact* production prompt — across
+**10 models** and a **12-grader battery** (simple deterministic, an LLM judge, cost/latency, and five
+**custom** graders written in [`promptopus.config.mjs`](promptopus.config.mjs)).
 
-Comparing **Llama-3.1-8B (Cloudflare Workers AI)** vs **gpt-4o-mini (OpenAI)**, judged by `gpt-4o`:
+Top of the board (sorted by pass rate; 6 cases each, judged by `gpt-4o`):
 
-| Metric | gpt-4o-mini | llama-3.1-8b |
-| --- | --- | --- |
-| Faithfulness (judge) | 0.96 | **1.00** |
-| Quality (judge) | 0.96 | **0.99** |
-| Total cost (5 cases) | $0.00048 | **$0.00024** |
-| Latency p95 | **2436 ms** | 6880 ms |
+| Model | Pass | Judge | Cost (6 cases) | p95 |
+| --- | --- | --- | --- | --- |
+| **llama-3.1-8b** (Workers AI) | **99%** | **1.00** | $0.0003 | 3220 ms |
+| mistral-small-24b | 99% | 0.98 | $0.0008 | 4576 ms |
+| gemma-3-12b | 97% | 1.00 | $0.0008 | 1665 ms |
+| gpt-4o-mini (OpenAI) | 92% | 1.00 | $0.0006 | 3859 ms |
+| llama-3.3-70b (largest) | 92% | 0.93 | $0.0021 | 4185 ms |
+| **qwq-32b** (reasoning) | **39%** | 0.77 | $0.0033 | 15837 ms |
 
-**The open 8B model matched — even edged — the frontier model on quality and faithfulness at half the
-cost; the only tradeoff is ~2.8× higher latency.** ReadAloud's production choice is well-justified.
+**Findings:** the **8B open model ReadAloud ships is the sweet spot** (99% pass, perfect
+faithfulness *and* quality, ~$0.0003) — it ties or beats the frontier `gpt-4o-mini` and every larger
+model; **scaling up mostly bought verbosity** (the 70B and gpt-4o-mini lost points to the custom
+`compression` grader). And the **reasoning model is the wrong tool** — `qwq-32b` leaked chain-of-thought
+and cratered at 39%, caught simultaneously by length, format, `no-reasoning-leak`, `number-fidelity`,
+and latency.
 
-→ Full writeup, per-case breakdown, and honest caveats: **[docs/readaloud-eval.md](docs/readaloud-eval.md)**.
+→ Full writeup, the 10-model table, and honest caveats: **[docs/readaloud-eval.md](docs/readaloud-eval.md)**.
 
 ## Adding a provider
 

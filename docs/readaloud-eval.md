@@ -1,86 +1,105 @@
-# ReadAloud TL;DR Summarizer — Eval Findings
+# ReadAloud TL;DR Summarizer — Multi-Model Benchmark
 
 > Evidence report produced by **Promptopus**, a config-driven LLM evaluation harness.
-> Suite: [`suites/readaloud-summarizer.yaml`](../suites/readaloud-summarizer.yaml) ·
-> Raw report: [`results/results.json`](../results/results.json) · Run date: 2026-06-06.
+> Suite: [`suites/readaloud-benchmark.yaml`](../suites/readaloud-benchmark.yaml) ·
+> Custom graders: [`promptopus.config.mjs`](../promptopus.config.mjs) ·
+> Raw report: [`results/benchmark.json`](../results/benchmark.json) · Run date: 2026-06-07.
 
 ## Question
 
-ReadAloud's "TL;DR" feature summarizes an article into 3–5 sentences of plain prose, and ships an
-**open 8-billion-parameter model on Cloudflare Workers AI** (`@cf/meta/llama-3.1-8b-instruct`). Is
-that cheap open model actually good enough, or is ReadAloud leaving quality on the table by not
-using a frontier small model?
+ReadAloud's "TL;DR" feature turns an article into **3–5 sentences of plain prose** and ships an
+open 8-billion-parameter model on Cloudflare Workers AI. Two product questions:
 
-This eval pits **Llama-3.1-8B (Workers AI)** against **gpt-4o-mini (OpenAI)** — the obvious frontier
-small-model alternative — using ReadAloud's *exact* production system prompt and output constraints
-(3–5 sentences, plain prose, no markdown, `max_tokens: 512`), across five article excerpts spanning
-encyclopedic, scientific, news, and narrative styles. Summaries are graded by an independent judge
-(`gpt-4o`) plus deterministic and cost/latency checks.
+1. **Is the 8B model the right pick** — or would a bigger model, or a frontier small model, be better?
+2. **Are newer/reasoning models worth a look?**
 
-The three grader families:
+So this is a real benchmark: **10 candidate models** scored on **6 article excerpts** by a **12-grader
+battery**, using ReadAloud's exact production prompt and constraints (`max_tokens: 512`, no markdown).
 
-- **Deterministic** — non-empty, under a length cap, and plain prose (a regex rejects bullets/markdown).
-- **LLM-as-judge** (judge: `gpt-4o`) — **faithfulness** (does the summary invent facts not in the
-  source?) and a **quality** rubric (concise, covers the main points, no meta-references).
-- **Cost + latency** — per-call USD and latency against budgets.
+## Setup
 
-![Promptopus dashboard — ReadAloud summarizer comparison](./dashboard-screenshot.png)
+**Models** — `gpt-4o-mini` (OpenAI, frontier-small) plus a Workers AI ladder routed through the
+Cloudflare AI Gateway: Llama 3.2-3B → 3.1-8B → 3.1-70B → 3.3-70B, Llama-4-Scout-17B, Mistral-Small-24B,
+Qwen2.5-32B, Gemma-3-12B, and the **QwQ-32B reasoning model**.
+
+**Graders (12)** spanning all three families plus custom:
+
+- **Simple deterministic** — `non-empty`, `max-length`, `regex` (plain prose, no markdown).
+- **LLM-as-judge** (`gpt-4o`) — `judge-faithfulness` and a tightened `judge-quality` rubric.
+- **Cost + latency** — `latency-budget`, `cost-budget`.
+- **Custom** (defined in `promptopus.config.mjs`, no fork): `sentence-count` (enforce 3–5),
+  `no-meta-reference` (forbid "this article…"), `no-reasoning-leak` (catch chain-of-thought),
+  `number-fidelity` (every number must appear in the source), `compression` (output must actually shorten the source).
+
+![Promptopus dashboard — 10-model benchmark](./dashboard-screenshot.png)
 
 ## Results
 
-| Metric | gpt-4o-mini (OpenAI) | llama-3.1-8b (Workers AI) |
-| --- | --- | --- |
-| Pass rate | 100% | 100% |
-| Faithfulness (judge) | 0.96 | **1.00** |
-| Quality (judge, family mean) | 0.96 | **0.99** |
-| Deterministic | 1.00 | 1.00 |
-| **Total cost** (5 cases) | $0.00048 | **$0.00024** |
-| Cost / call | $0.0001 | **$0.00005** |
-| **Latency p50** | **1998 ms** | 5685 ms |
-| **Latency p95** | **2436 ms** | 6880 ms |
-| Tokens in / out | 1165 / 501 | 1293 / 469 |
-| Errors | 0 | 0 |
+Sorted by pass rate (share of all grader checks passed), then cost. 6 cases each, 0 errors.
 
-## Verdict: ReadAloud's open-8B choice is the right call
+| Model | Pass | Judge | Det. | Cost (6 cases) | p50 | p95 |
+| --- | --- | --- | --- | --- | --- | --- |
+| **llama-3.1-8b** (Workers AI) | **99%** | **1.00** | 1.00 | $0.0003 | 849 ms | 3220 ms |
+| mistral-small-24b | 99% | 0.98 | 1.00 | $0.0008 | 2507 ms | 4576 ms |
+| gemma-3-12b | 97% | 1.00 | 1.00 | $0.0008 | 1394 ms | **1665 ms** |
+| llama-4-scout-17b | 97% | 0.98 | 0.99 | $0.0009 | 1709 ms | 1944 ms |
+| qwen2.5-32b | 96% | 0.98 | 1.00 | $0.0015 | 3176 ms | 3682 ms |
+| llama-3.1-70b | 96% | 1.00 | 0.99 | $0.0018 | 3983 ms | 4738 ms |
+| llama-3.2-3b | 94% | 0.91 | 1.00 | **$0.0002** | **749 ms** | 1370 ms |
+| gpt-4o-mini (OpenAI) | 92% | 1.00 | 0.98 | $0.0006 | 1960 ms | 3859 ms |
+| llama-3.3-70b | 92% | 0.93 | 0.97 | $0.0021 | 3146 ms | 4185 ms |
+| **qwq-32b** (reasoning) | **39%** | 0.77 | 0.37 | $0.0033 | 11283 ms | 15837 ms |
 
-**The cheap open model wins on the axes that matter for this feature.** Llama-3.1-8B **matched — even
-slightly edged — gpt-4o-mini on quality and faithfulness** while costing **half as much**. The single
-most telling cell: on the *black-holes* case, gpt-4o-mini's faithfulness dropped to **0.80** because
-the judge caught an unsupported embellishment, while Llama-8B stayed **1.00** on the same source.
-Across all five cases Llama never hallucinated; gpt-4o-mini slipped once.
+## Verdict
 
-**The price Llama pays is latency.** It ran **~2.8× slower at p95** (6.9 s vs 2.4 s) and was far more
-variable (1.4 s–6.9 s vs a tight 1.6 s–2.4 s for gpt-4o-mini). Both stayed inside the 8 s budget and
-passed every grader, so for an **opt-in, asynchronous** TL;DR that the user then plays back via
-text-to-speech, that latency is acceptable — and it buys a 2× cost saving with no quality loss.
+**The 8B open model is the right call — and bigger is not better.**
 
-**Recommendation: ReadAloud should stay on the 8B Workers AI model.** It is as faithful, as good, and
-half the cost of the frontier small model. The only reason to switch would be a latency-sensitive,
-interactive surface — which the TL;DR feature is not.
+- **`llama-3.1-8b` is the sweet spot:** 99% pass, perfect faithfulness *and* quality (1.00 / 1.00),
+  at **$0.0003** and a sub-second median latency. It ties or beats every larger model and the frontier
+  `gpt-4o-mini`. ReadAloud's production choice is vindicated.
+- **Scaling up hurt here:** the **largest** model, `llama-3.3-70b`, scored **92%** — the same as
+  `gpt-4o-mini` — at **7× the cost** and **~4× the latency** of the 8B. For a tight, constrained TL;DR,
+  more parameters mostly bought verbosity.
+- **The frontier-small model didn't win:** `gpt-4o-mini` (92%) trailed five smaller open models, dragged
+  down by the custom `compression` grader — it writes thorough but *long* summaries.
+- **Cheapest/fastest:** the 3B (`$0.0002`, 749 ms) is viable when budget rules, but its judged quality
+  dips (0.91) — a real quality/cost knob.
+- **Reasoning models are the wrong tool:** **`qwq-32b` cratered at 39%.** Its output is literally
+  *"Okay, the user wants a summary… Let me read through…"* — pure chain-of-thought that never delivers a
+  clean TL;DR. The battery caught it from every angle at once: too long, wrong sentence count, leaked
+  reasoning, hallucinated a number (`2.25` from "two and a quarter hours"), poor judged quality, **and**
+  15.8s p95 latency at the highest cost.
+
+## What the custom graders added
+
+The built-in graders said "most models are fine." The **custom** graders found the story:
+
+- **`compression`** was the real differentiator among the good models — it revealed that the
+  "smartest" candidates (`gpt-4o-mini`, `llama-3.3-70b`) are the *least concise*.
+- **`no-reasoning-leak`** isolated QwQ's failure mode precisely.
+- **`number-fidelity`** confirmed every production-grade model grounded all 5–8 numbers on the
+  numeric Apollo-11 stress case; only the reasoning model slipped.
+
+This is the point of the exercise: a few task-specific graders, written in your own code, turn "looks
+fine" into a ranked, defensible decision.
 
 ## Honest caveats
 
-- **Judge ceiling / rubric tuning.** An early run with a looser rubric scored everything 1.00 (the
-  judge saturated). Tightening the quality rubric to use the full 0–1 range produced the spread above.
-  Faithfulness on clean factual excerpts is still an easy task; a harder corpus (long, contradictory,
-  or adversarial sources) would separate models more.
-- **Self-judging bias.** The judge (`gpt-4o`) shares a family with one candidate (`gpt-4o-mini`).
-  Models tend to favor their own style, so if anything the gpt-4o-mini numbers are *generously*
-  estimated — which only strengthens the "the 8B model is enough" conclusion.
-- **Anthropic was dropped mid-run.** The suite also defines a `claude-haiku-4-5` candidate. During the
-  full three-way run the Anthropic account **ran out of credits**, so those cells errored. Promptopus
-  recorded the failures as error results and the run continued (partial-run resilience), and the
-  committed report excludes Anthropic via `--providers`. Re-add it once credits are available.
+- **Judge ceiling / self-judging.** `gpt-4o` is the judge and shares a family with `gpt-4o-mini`; the
+  quality rubric was tightened to avoid saturating at 1.00. Treat judge scores as directional.
+- **Workers AI pricing is approximate** (per-model `$/MTok` estimates); the *ordering* by size is the
+  signal, not the exact cents. Judge-call cost is separate from the candidate cost shown.
+- **Grok not included.** Routing Grok/OpenAI/Anthropic through the Cloudflare AI Gateway needs those
+  keys stored in the gateway (BYOK); add an xAI key and Grok drops straight into the lineup.
 
 ## Reproduce
 
 ```bash
-cp .env.example .env     # add OPENAI_API_KEY, CLOUDFLARE_API_TOKEN, CF_AI_BASE_URL (and ANTHROPIC_API_KEY for the 3-way)
+cp .env.example .env     # OPENAI_API_KEY + Cloudflare Workers AI (CF_AI_BASE_URL, CLOUDFLARE_API_TOKEN)
 npm install && npm run build
 node packages/core/dist/cli/index.js run \
-  suites/readaloud-summarizer.yaml --providers gpt-4o-mini,llama-8b --out results/results.json
-node packages/core/dist/cli/index.js view results/results.json
+  suites/readaloud-benchmark.yaml --out results/benchmark.json --max-concurrency 6
+node packages/core/dist/cli/index.js view results/benchmark.json
 ```
 
-A single-vendor variant ([`suites/readaloud-summarizer.openai.yaml`](../suites/readaloud-summarizer.openai.yaml))
-compares gpt-4o-mini vs gpt-4o (small vs large within one vendor) if you want that angle.
+The custom graders load automatically from `promptopus.config.mjs` at the repo root.
