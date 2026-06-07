@@ -13,7 +13,9 @@ const baseUrlFields = {
   baseUrlEnv: z.string().min(1).optional(),
 };
 
-export const ProviderSpecSchema = z.discriminatedUnion('kind', [
+export const BUILTIN_PROVIDER_KINDS = ['openai', 'anthropic', 'openai-compat', 'mock'] as const;
+
+export const BuiltinProviderSpecSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('openai'), ...providerBase, ...baseUrlFields }).strict(),
   z.object({ kind: z.literal('anthropic'), ...providerBase }).strict(),
   z.object({ kind: z.literal('openai-compat'), ...providerBase, ...baseUrlFields }).strict(),
@@ -27,7 +29,25 @@ export const ProviderSpecSchema = z.discriminatedUnion('kind', [
     .strict(),
 ]);
 
-export const GraderSpecSchema = z.discriminatedUnion('type', [
+export const ProviderSpecSchema = z
+  .object({ kind: z.string().min(1), name: z.string().min(1), model: z.string().min(1).optional() })
+  .passthrough();
+
+export const BUILTIN_GRADER_TYPES = [
+  'non-empty',
+  'equals',
+  'contains',
+  'regex',
+  'max-length',
+  'is-valid-json',
+  'json-schema',
+  'judge-faithfulness',
+  'judge-quality',
+  'latency-budget',
+  'cost-budget',
+] as const;
+
+export const BuiltinGraderSpecSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('non-empty') }).strict(),
   z
     .object({
@@ -72,6 +92,8 @@ export const GraderSpecSchema = z.discriminatedUnion('type', [
     .strict(),
   z.object({ type: z.literal('cost-budget'), maxUsd: z.number().positive() }).strict(),
 ]);
+
+export const GraderSpecSchema = z.object({ type: z.string().min(1) }).passthrough();
 
 export const CaseConfigSchema = z
   .object({
@@ -167,10 +189,15 @@ export const SuiteConfigSchema = z
     }
   });
 
-export type ProviderSpec = z.infer<typeof ProviderSpecSchema>;
-export type ProviderKind = ProviderSpec['kind'];
-export type GraderSpec = z.infer<typeof GraderSpecSchema>;
-export type GraderType = GraderSpec['type'];
+export type BuiltinProviderSpec = z.infer<typeof BuiltinProviderSpecSchema>;
+export type CustomProviderSpec = { kind: string; name: string; model?: string; [key: string]: unknown };
+export type ProviderSpec = BuiltinProviderSpec | CustomProviderSpec;
+export type ProviderKind = string;
+
+export type BuiltinGraderSpec = z.infer<typeof BuiltinGraderSpecSchema>;
+export type CustomGraderSpec = { type: string; [key: string]: unknown };
+export type GraderSpec = BuiltinGraderSpec | CustomGraderSpec;
+export type GraderType = string;
 export type CaseConfig = z.infer<typeof CaseConfigSchema>;
 export type SuiteDefaults = z.infer<typeof SuiteDefaultsSchema>;
 export type JudgeConfig = z.infer<typeof JudgeConfigSchema>;

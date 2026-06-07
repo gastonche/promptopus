@@ -2,7 +2,7 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
-import { buildReport } from '@promptopus/core';
+import { buildReport } from 'promptopus';
 
 const here = dirname(fileURLToPath(import.meta.url));
 

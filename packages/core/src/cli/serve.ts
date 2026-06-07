@@ -19,7 +19,14 @@ export function findDashboardDist(): string | null {
   if (process.env['PROMPTOPUS_DASHBOARD_DIST']) {
     return process.env['PROMPTOPUS_DASHBOARD_DIST'];
   }
-  let dir = dirname(fileURLToPath(import.meta.url));
+  const here = dirname(fileURLToPath(import.meta.url));
+
+  // Bundled with the published package: <packageRoot>/dashboard (dist/cli -> ../../dashboard).
+  const bundled = resolve(here, '../../dashboard');
+  if (existsSync(join(bundled, 'index.html'))) return bundled;
+
+  // Dev / monorepo: walk up to apps/dashboard/dist.
+  let dir = here;
   for (let i = 0; i < 8; i += 1) {
     const candidate = join(dir, 'apps/dashboard/dist');
     if (existsSync(join(candidate, 'index.html'))) return candidate;

@@ -6,4 +6,4 @@ export type {
   GraderResult,
   GraderFamily,
   GenerateResult,
-} from '@promptopus/core';
+} from 'promptopus';

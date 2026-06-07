@@ -69,11 +69,18 @@ describe('friendly validation errors', () => {
     }
   }
 
-  it('reports an unknown provider kind with a path', () => {
-    expectIssue(
+  it('allows custom (plugin) provider kinds at config time', () => {
+    const cfg = parseSuiteConfig(
       `name: D\nproviders: [{ name: p, kind: gemini, model: m }]\ncases: [{ id: c, prompt: hi, graders: [{ type: non-empty }] }]`,
-      /providers\[0\]/,
     );
+    expect(cfg.providers[0]?.kind).toBe('gemini');
+  });
+
+  it('allows custom (plugin) grader types at config time', () => {
+    const cfg = parseSuiteConfig(
+      `name: D\nproviders: [{ name: p, kind: openai, model: m }]\ncases: [{ id: c, prompt: hi, graders: [{ type: my-grader, max: 5 }] }]`,
+    );
+    expect(cfg.cases[0]?.graders?.[0]?.type).toBe('my-grader');
   });
 
   it('rejects unknown keys (strict)', () => {

@@ -1,9 +1,31 @@
 {
-  "name": "@promptopus/core",
+  "name": "promptopus",
   "version": "0.1.0",
-  "description": "Promptopus core: domain model, config loader, providers, graders, runner, and CLI.",
+  "description": "A config-driven LLM evaluation harness — CLI + dashboard. Define an eval in YAML, run it against many models, score every output with deterministic, LLM-as-judge, and cost/latency graders, and compare side by side.",
   "type": "module",
   "license": "MIT",
+  "author": "Gaston Che",
+  "homepage": "https://promptopus.pages.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shizle/promptopus.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shizle/promptopus/issues"
+  },
+  "keywords": [
+    "llm",
+    "evaluation",
+    "eval",
+    "openai",
+    "anthropic",
+    "prompt",
+    "testing",
+    "cli",
+    "llm-as-judge",
+    "benchmark",
+    "ai"
+  ],
   "bin": {
     "promptopus": "./dist/cli/index.js",
     "pop": "./dist/cli/index.js"
@@ -18,14 +40,25 @@
   },
   "files": [
     "dist",
-    "examples"
+    "examples",
+    "dashboard",
+    "README.md"
   ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "dev": "tsc -p tsconfig.json --watch"
+    "dev": "tsc -p tsconfig.json --watch",
+    "bundle:dashboard": "node scripts/bundle-dashboard.mjs",
+    "prepack": "node scripts/bundle-dashboard.mjs",
+    "prepublishOnly": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "commander": "^12.1.0",

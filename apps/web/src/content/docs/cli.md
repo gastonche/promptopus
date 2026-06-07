@@ -5,11 +5,12 @@ section: Tooling
 order: 1
 ---
 
-The CLI is exposed as `promptopus` (with a short alias `pop`). From the repo, invoke it as
-`node packages/core/dist/cli/index.js`. A `.env` file in the working directory is loaded automatically.
+The CLI is exposed as `promptopus` (with a short alias `pop`). Install it globally
+(`npm i -g promptopus`) or run it ad-hoc with `npx promptopus …`. A `.env` file in the working
+directory is loaded automatically.
 
 ```bash
-promptopus --help
+npx promptopus --help
 promptopus --version
 ```
 
@@ -47,6 +48,7 @@ promptopus run <suite> [options]
 | `-p, --providers <list>` | all | Comma-separated subset of provider names to run. |
 | `-c, --max-concurrency <n>` | `4` | Max concurrent provider calls. |
 | `-r, --retries <n>` | `2` | Retries per call on rate-limit / 5xx / network errors. |
+| `--config <path>` | auto | A `promptopus.config.{mjs,js}` plugin file (auto-discovered in the working dir). See [Extending](/docs/extending). |
 
 ```bash
 # full run
@@ -79,10 +81,8 @@ promptopus view results/results.json
 promptopus view results.json --port 8080 --no-open
 ```
 
-The server serves the prebuilt dashboard plus your report at `/report.json`. It locates the dashboard
-build automatically; if it can't find it, build it once with
-`npm run build --workspace @promptopus/dashboard` (or set `PROMPTOPUS_DASHBOARD_DIST`). See
-[Dashboard](/docs/dashboard).
+The server serves the dashboard plus your report at `/report.json`. The dashboard ships **bundled with
+the package**, so `view` works out of the box after `npm i promptopus`. See [Dashboard](/docs/dashboard).
 
 ## Tips
 

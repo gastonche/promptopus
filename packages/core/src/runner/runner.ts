@@ -25,8 +25,21 @@ export interface RunSuiteOptions {
   now?: () => string;
 }
 
-function isJudgeGrader(spec: GraderSpec): boolean {
-  return spec.type === 'judge-faithfulness' || spec.type === 'judge-quality';
+const BUILTIN_NON_JUDGE = new Set([
+  'non-empty',
+  'equals',
+  'contains',
+  'regex',
+  'max-length',
+  'is-valid-json',
+  'json-schema',
+  'latency-budget',
+  'cost-budget',
+]);
+
+function mayUseJudge(spec: GraderSpec): boolean {
+  if (spec.type === 'judge-faithfulness' || spec.type === 'judge-quality') return true;
+  return !BUILTIN_NON_JUDGE.has(spec.type);
 }
 
 interface Cell {
@@ -101,7 +114,7 @@ export async function runSuite(suite: EvalSuite, options: RunSuiteOptions): Prom
   const concurrency = options.concurrency ?? 4;
   const now = options.now ?? ((): string => new Date().toISOString());
 
-  const usesJudge = suite.cases.some((c) => c.graders.some(isJudgeGrader));
+  const usesJudge = suite.cases.some((c) => c.graders.some(mayUseJudge));
   const deps: GraderDeps = {};
   if (usesJudge && suite.judge) deps.judge = buildJudgeClient(suite.judge);
 

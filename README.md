@@ -44,24 +44,29 @@ or a scoring strategy means implementing one interface and registering it; nothi
 
 ![Promptopus dashboard](docs/dashboard-screenshot.png)
 
+## Install
+
+```bash
+npm i -g promptopus     # or run ad-hoc: npx promptopus <cmd>
+```
+
+[![npm](https://img.shields.io/npm/v/promptopus)](https://www.npmjs.com/package/promptopus)
+
 ## Quick start
 
 ```bash
-npm install
-npm run build
-
-# scaffold an example suite
-node packages/core/dist/cli/index.js init           # writes promptopus.suite.yaml
-
-# run it (no keys needed — the example includes a mock provider path)
-node packages/core/dist/cli/index.js run suites/quickstart.yaml --out results.json
-
-# open the dashboard against a report
-node packages/core/dist/cli/index.js view results.json
+promptopus init                       # scaffold an example suite
+promptopus run my.suite.yaml          # run it, write results.json, print a table
+promptopus view results.json          # open the comparison dashboard
 ```
 
-> Installed as a bin, these are just `promptopus run …` / `pop run …`. Provider keys are read from the
-> environment (auto-loaded from `.env`); see [`.env.example`](.env.example).
+> The bin is `promptopus` (short alias `pop`). Provider keys are read from the environment
+> (auto-loaded from `.env`); see [`.env.example`](.env.example). Run with zero keys using the built-in
+> `mock` provider. Extend with your own providers/graders via a `promptopus.config.mjs` — no fork
+> needed (see [Extending](#adding-a-provider)).
+
+Developing from source instead? `npm install && npm run build`, then
+`node packages/core/dist/cli/index.js …`.
 
 A run prints a live progress view and a summary table:
 

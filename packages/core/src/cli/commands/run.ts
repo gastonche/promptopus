@@ -1,13 +1,15 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { dirname, relative, resolve } from 'node:path';
 
 import { Command } from 'commander';
 
 import { PromptopusConfigError } from '../../config/errors.js';
 import { loadSuite } from '../../config/load.js';
+import { findConfigFile, loadConfigFile } from '../../config/plugins.js';
 import type { Provider } from '../../domain/provider.js';
 import { GraderError } from '../../graders/errors.js';
-import { createProvider } from '../../providers/registry.js';
+import { createGraderRegistry } from '../../graders/registry.js';
+import { createProviderRegistry } from '../../providers/registry.js';
 import { ProviderError } from '../../providers/errors.js';
 import { runSuite } from '../../runner/runner.js';
 import { renderSummaryTable } from '../summary-table.js';
@@ -18,6 +20,7 @@ interface RunOptions {
   providers?: string;
   maxConcurrency: string;
   retries: string;
+  config?: string;
 }
 
 export function registerRun(program: Command): void {
@@ -29,6 +32,7 @@ export function registerRun(program: Command): void {
     .option('-p, --providers <list>', 'comma-separated subset of provider names to run')
     .option('-c, --max-concurrency <n>', 'max concurrent provider calls', '4')
     .option('-r, --retries <n>', 'retries per call on rate-limit/5xx errors', '2')
+    .option('--config <path>', 'path to a promptopus.config.{mjs,js} plugin file')
     .action(async (suitePath: string, opts: RunOptions) => {
       let suite;
       try {
@@ -56,11 +60,32 @@ export function registerRun(program: Command): void {
         specs = suite.providers.filter((p) => wanted.includes(p.name));
       }
 
+      const providerRegistry = createProviderRegistry();
+      const graderRegistry = createGraderRegistry();
+
+      const configPath = opts.config ? resolve(process.cwd(), opts.config) : findConfigFile();
+      if (configPath) {
+        try {
+          const plugins = await loadConfigFile(configPath);
+          for (const [kind, factory] of Object.entries(plugins.providers ?? {})) {
+            providerRegistry.register(kind, factory);
+          }
+          for (const [type, factory] of Object.entries(plugins.graders ?? {})) {
+            graderRegistry.register(type, factory);
+          }
+          note(`${symbols.bullet} plugins: ${style.purple(relative(process.cwd(), configPath))}`);
+        } catch (err) {
+          note(`${symbols.fail} ${style.red(`failed to load config ${configPath}: ${(err as Error).message}`)}`);
+          process.exitCode = 1;
+          return;
+        }
+      }
+
       const providers: Provider[] = [];
       const buildErrors: string[] = [];
       for (const spec of specs) {
         try {
-          providers.push(createProvider(spec));
+          providers.push(providerRegistry.create(spec));
         } catch (err) {
           if (err instanceof ProviderError) buildErrors.push(`${spec.name}: ${err.message}`);
           else throw err;
@@ -86,6 +111,7 @@ export function registerRun(program: Command): void {
       try {
         report = await runSuite(suite, {
           providers,
+          createGrader: (spec, deps) => graderRegistry.create(spec, deps),
           concurrency,
           retry: { retries: Number.isFinite(retries) ? retries : 2 },
           onEvent: (event) => {

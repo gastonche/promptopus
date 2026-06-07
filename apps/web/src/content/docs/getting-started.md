@@ -15,24 +15,21 @@ real providers when you're ready.
 
 ## Install
 
-Promptopus is a monorepo. Clone it and build the core package:
+Run it instantly with `npx` — no install needed:
 
 ```bash
-git clone <your-fork-url> promptopus
-cd promptopus
-npm install
-npm run build
+npx promptopus init
 ```
 
-This builds `@promptopus/core` (the CLI) and the dashboard. The CLI bin is `promptopus` (with a short
-alias `pop`). From the repo you can invoke it directly:
+Or install the CLI globally:
 
 ```bash
-node packages/core/dist/cli/index.js --help
+npm i -g promptopus
+promptopus --help
 ```
 
-> The examples below use `promptopus …` for readability. If you haven't linked the bin globally, prefix
-> with `node packages/core/dist/cli/index.js`.
+The bin is `promptopus`, with a short alias `pop`. You can also add it as a library dependency
+(`npm i promptopus`) to build evals programmatically — see [Extending](/docs/extending).
 
 ## 1. Scaffold a suite
 
@@ -45,10 +42,24 @@ families. Use `--stdout` to print instead of writing a file, and `--force` to ov
 
 ## 2. Run it
 
-A zero-key suite using the `mock` provider ships in the repo at `suites/quickstart.yaml`:
+The scaffolded suite references real providers. To run **with zero keys**, point it at a `mock`
+provider — here's a minimal suite you can paste into `quickstart.yaml`:
+
+```yaml
+name: Quickstart
+providers:
+  - { name: mock-a, kind: mock, model: mock }
+  - { name: mock-b, kind: mock, model: mock, text: "Paris is the capital of France." }
+cases:
+  - id: mentions-paris
+    prompt: "The capital of France is Paris."
+    graders:
+      - { type: non-empty }
+      - { type: contains, value: Paris, caseInsensitive: true }
+```
 
 ```bash
-promptopus run suites/quickstart.yaml --out results.json
+promptopus run quickstart.yaml --out results.json
 ```
 
 You'll see live progress and a summary table:
@@ -79,11 +90,7 @@ drill-down. See [Dashboard](/docs/dashboard).
 ## Adding real providers
 
 Provider credentials are read from environment variables, auto-loaded from a `.env` file in the
-directory you run from. Copy the template and fill in what you need:
-
-```bash
-cp .env.example .env
-```
+directory you run from. Create one with what you need:
 
 ```bash
 # .env
@@ -100,11 +107,12 @@ CLOUDFLARE_API_TOKEN=...
 Now point a suite at real models (see [Providers](/docs/providers)) and run:
 
 ```bash
-promptopus run suites/readaloud-summarizer.yaml \
-  --providers gpt-4o-mini,llama-8b --out results/results.json
+promptopus run my.suite.yaml --out results.json
+promptopus view results.json
 ```
 
 ## Next
 
 - [Core concepts](/docs/core-concepts) — the data model behind a run.
 - [Configuration](/docs/configuration) — the complete suite YAML reference.
+- [Extending](/docs/extending) — add a provider or grader in your own code.

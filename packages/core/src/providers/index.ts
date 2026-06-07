@@ -1,4 +1,5 @@
-export { createProvider } from './registry.js';
+export { createProvider, createProviderRegistry, ProviderRegistry } from './registry.js';
+export type { ProviderFactory, ProviderSpecInput } from './registry.js';
 export { MockProvider } from './mock.js';
 export { OpenAIProvider } from './openai.js';
 export { AnthropicProvider } from './anthropic.js';

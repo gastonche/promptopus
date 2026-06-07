@@ -25,3 +25,6 @@ coverage/
 
 # Dashboard build
 apps/dashboard/dist/
+
+# Bundled dashboard (generated for npm publish)
+packages/core/dashboard/

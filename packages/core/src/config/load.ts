@@ -3,8 +3,15 @@ import { parse as parseYaml, YAMLParseError } from 'yaml';
 
 import type { EvalSuite, TestCase } from '../domain/testcase.js';
 import { interpolate, TemplateError } from '../templating.js';
-import { fromZodError, PromptopusConfigError } from './errors.js';
-import { SuiteConfigSchema, type SuiteConfig } from './schema.js';
+import { formatPath, fromZodError, PromptopusConfigError } from './errors.js';
+import {
+  BUILTIN_GRADER_TYPES,
+  BUILTIN_PROVIDER_KINDS,
+  BuiltinGraderSpecSchema,
+  BuiltinProviderSpecSchema,
+  SuiteConfigSchema,
+  type SuiteConfig,
+} from './schema.js';
 
 export function loadSuiteConfig(path: string): SuiteConfig {
   let raw: string;
@@ -41,7 +48,55 @@ export function parseSuiteConfig(yamlText: string, source = '<inline>'): SuiteCo
   if (!result.success) {
     throw fromZodError(result.error, source);
   }
-  return result.data;
+  return validateBuiltins(result.data, source);
+}
+
+function validateBuiltins(config: SuiteConfig, source: string): SuiteConfig {
+  const issues: string[] = [];
+
+  const checkProvider = (spec: { kind: string }, path: (string | number)[]): unknown => {
+    if (!(BUILTIN_PROVIDER_KINDS as readonly string[]).includes(spec.kind)) return spec;
+    const parsed = BuiltinProviderSpecSchema.safeParse(spec);
+    if (parsed.success) return parsed.data;
+    for (const issue of parsed.error.issues) {
+      issues.push(`${formatPath([...path, ...issue.path])}: ${issue.message}`);
+    }
+    return spec;
+  };
+
+  const checkGrader = (spec: { type: string }, path: (string | number)[]): unknown => {
+    if (!(BUILTIN_GRADER_TYPES as readonly string[]).includes(spec.type)) return spec;
+    const parsed = BuiltinGraderSpecSchema.safeParse(spec);
+    if (parsed.success) return parsed.data;
+    for (const issue of parsed.error.issues) {
+      issues.push(`${formatPath([...path, ...issue.path])}: ${issue.message}`);
+    }
+    return spec;
+  };
+
+  const providers = config.providers.map((p, i) => checkProvider(p, ['providers', i]));
+  const defaultsGraders = config.defaults?.graders?.map((g, i) =>
+    checkGrader(g, ['defaults', 'graders', i]),
+  );
+  const cases = config.cases.map((c, ci) => ({
+    ...c,
+    graders: c.graders?.map((g, gi) => checkGrader(g, ['cases', ci, 'graders', gi])),
+  }));
+
+  if (issues.length > 0) {
+    issues.sort((a, b) => a.localeCompare(b));
+    const message =
+      `Invalid suite config (${source}) — ${issues.length} issue${issues.length === 1 ? '' : 's'}:\n` +
+      issues.map((line) => `  • ${line}`).join('\n');
+    throw new PromptopusConfigError(message, issues);
+  }
+
+  return {
+    ...config,
+    providers,
+    defaults: config.defaults ? { ...config.defaults, graders: defaultsGraders } : config.defaults,
+    cases,
+  } as SuiteConfig;
 }
 
 export function resolveSuite(config: SuiteConfig): EvalSuite {
@@ -73,7 +128,11 @@ export function resolveSuite(config: SuiteConfig): EvalSuite {
     return resolved;
   });
 
-  const suite: EvalSuite = { name: config.name, providers: config.providers, cases };
+  const suite: EvalSuite = {
+    name: config.name,
+    providers: config.providers as EvalSuite['providers'],
+    cases,
+  };
   if (config.description !== undefined) suite.description = config.description;
   if (config.judge !== undefined) suite.judge = config.judge;
   if (config.defaults !== undefined) suite.defaults = config.defaults;
