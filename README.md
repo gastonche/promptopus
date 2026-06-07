@@ -132,7 +132,7 @@ the economics.
 
 ## Dogfood: the ReadAloud summarizer eval
 
-Promptopus evaluates the **TL;DR summarization** feature of [ReadAloud](https://github.com/) — using
+Promptopus evaluates the **TL;DR summarization** feature of [ReadAloud](https://github.com/gastonche/read-aloud) — using
 its *exact* production prompt and constraints — to answer a real product question: **is the cheap open
 8B model ReadAloud ships as good as a frontier small model?**
 

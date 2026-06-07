@@ -138,6 +138,6 @@ domain types (`Provider`, `Grader`, `Report`, …).
 If your provider or grader is broadly useful, add it to the package itself: implement the interface in
 `packages/core/src/providers/` or `src/graders/`, register it in the built-in registry
 (`createProviderRegistry` / `createGraderRegistry`), add a strict zod variant for nice validation, and a
-pricing row for providers. See [CONTRIBUTING](https://github.com/shizle/promptopus/blob/main/CONTRIBUTING.md).
+pricing row for providers. See [CONTRIBUTING](https://github.com/gastonche/promptopus/blob/main/CONTRIBUTING.md).
 
 Next: [The ReadAloud dogfood](/docs/dogfood).

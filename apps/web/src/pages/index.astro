@@ -219,7 +219,7 @@ Latency · p95          <span class="text-[#27c93f]">2436ms</span>       6880ms
         judge, and cost/latency, all in one report.
       </p>
 
-      <div class="relative mx-auto mt-10 w-full max-w-[540px]">
+      <div class="relative mx-auto mt-10 w-full max-w-[340px] sm:max-w-[440px] lg:max-w-[520px] xl:max-w-[560px]">
         <div class="absolute -inset-6 rounded-[2.2rem] bg-pop-500/20 blur-2xl"></div>
         <div
           class="group relative overflow-hidden rounded-2xl border border-pop-300/60 shadow-2xl shadow-pop-500/20"
@@ -558,6 +558,12 @@ Latency · p95          <span class="text-[#27c93f]">2436ms</span>       6880ms
   const playBtn = document.getElementById('teaser-play') as HTMLButtonElement | null;
   const soundBtn = document.getElementById('teaser-sound') as HTMLButtonElement | null;
   const soundLabel = document.getElementById('teaser-sound-label');
+  const soundIcon = document.getElementById('teaser-sound-icon');
+
+  const ICON_MUTED =
+    '<path d="M11 5 6 9H2v6h4l5 4V5Z"></path><path d="m22 9-6 6M16 9l6 6"></path>';
+  const ICON_SOUND =
+    '<path d="M11 5 6 9H2v6h4l5 4V5Z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M19 5a9 9 0 0 1 0 14"></path>';
 
   if (video && playBtn && soundBtn) {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -573,12 +579,17 @@ Latency · p95          <span class="text-[#27c93f]">2436ms</span>       6880ms
     video.addEventListener('play', setOverlay);
     video.addEventListener('pause', setOverlay);
 
-    soundBtn.addEventListener('click', () => {
-      video.muted = !video.muted;
+    const updateSound = () => {
       soundBtn.setAttribute('aria-pressed', String(!video.muted));
       if (soundLabel) soundLabel.textContent = video.muted ? 'Sound off' : 'Sound on';
-      if (video.muted === false) tryPlay();
+      if (soundIcon) soundIcon.innerHTML = video.muted ? ICON_MUTED : ICON_SOUND;
+    };
+    soundBtn.addEventListener('click', () => {
+      video.muted = !video.muted;
+      updateSound();
+      if (!video.muted) tryPlay();
     });
+    updateSound();
 
     if (!reduce) {
       const io = new IntersectionObserver(
