@@ -8,6 +8,7 @@
     "music:synth": "node scripts/gen-music.mjs",
     "studio": "remotion studio",
     "render": "node scripts/get-music.mjs && remotion render Speedrun out/promptopus-teaser.mp4 --concurrency=4",
+    "render:pitch": "node scripts/get-music.mjs && remotion render Pitch out/promptopus-pitch.mp4 --concurrency=4",
     "still": "remotion still Speedrun out/still.png",
     "typecheck": "tsc --noEmit"
   },
