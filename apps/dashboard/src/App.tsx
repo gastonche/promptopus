@@ -68,10 +68,12 @@ export default function App() {
     [report, selectedCase],
   );
 
+  const containerW = (report?.providers.length ?? 0) > 5 ? 'max-w-[1700px]' : 'max-w-6xl';
+
   return (
     <div className="min-h-full">
       <header className="border-b border-pop-300/50 bg-white/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-6 py-4">
+        <div className={`mx-auto flex ${containerW} items-center gap-3 px-6 py-4`}>
           <OctopusMark size={40} />
           <Wordmark />
           {report && (
@@ -86,7 +88,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-8">
+      <main className={`mx-auto ${containerW} px-6 py-8`}>
         {!report ? (
           <EmptyState onFile={loadFile} />
         ) : (
