@@ -86,19 +86,10 @@ Developing from source instead? `npm install && npm run build`, then
 
 A run prints a live progress view and a summary table:
 
-```
-🐙 Promptopus — ReadAloud TL;DR Summarizer
-  5 cases × 2 providers, concurrency 3
+![Promptopus CLI run](docs/cli-demo.gif)
 
-  [1/10] ✓ eiffel-tower × gpt-4o-mini
-  ...
-Metric                 gpt-4o-mini  llama-8b
----------------------  -----------  --------
-Pass rate              100%         100%
-Score · judge          0.96         0.99
-Cost · total           $0.0005      $0.0002
-Latency · p95          2436ms       6880ms
-```
+> _Keyless demo — the [`mock` provider suite](suites/quickstart.yaml) needs no API keys. Reproduce it
+> with `promptopus run suites/quickstart.yaml` (tape: [`docs/cli-demo.tape`](docs/cli-demo.tape))._
 
 ## Architecture
 
