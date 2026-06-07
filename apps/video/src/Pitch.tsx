@@ -46,7 +46,7 @@ export const Pitch: React.FC<PitchProps> = ({ music }) => {
       <Letterbox />
       {music && (
         <Audio
-          src={staticFile('music.mp3')}
+          src={staticFile('music-pitch.mp3')}
           volume={(f) =>
             interpolate(f, [0, 30, durationInFrames - 60, durationInFrames], [0, 0.6, 0.6, 0], {
               extrapolateLeft: 'clamp',
