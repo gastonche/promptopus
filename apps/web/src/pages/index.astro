@@ -168,25 +168,25 @@ const faqs = [
             />
           </a>
           <span>● TypeScript, strict — no <code class="text-white/60">any</code> in core</span>
-          <span>● 52 unit tests</span>
+          <span>● 76 unit tests</span>
           <span>● MIT licensed</span>
         </div>
       </div>
 
-      <CodeWindow title="promptopus run readaloud-summarizer.yaml">
-        <pre class="text-white/90"><span class="text-pop-300">🐙 Promptopus</span> — ReadAloud TL;DR Summarizer
-  5 cases × 2 providers, concurrency 3
+      <CodeWindow title="promptopus run readaloud-benchmark.yaml">
+        <pre class="text-white/90"><span class="text-pop-300">🐙 Promptopus</span> — ReadAloud Multi-Model Benchmark
+  6 cases × 10 providers, concurrency 6
 
-  <span class="text-[#27c93f]">[10/10] ✓</span> coffee-history × llama-8b
+  <span class="text-[#27c93f]">[60/60] ✓</span> apollo-11 × qwq-32b
 
-Metric                 gpt-4o-mini  llama-8b
----------------------  -----------  --------
-Pass rate              <span class="text-[#27c93f]">100%</span>         <span class="text-[#27c93f]">100%</span>
-Score · judge          0.96         <span class="text-[#27c93f]">0.99</span>
-Cost · total           $0.0005      <span class="text-[#27c93f]">$0.0002</span>
-Latency · p95          <span class="text-[#27c93f]">2436ms</span>       6880ms
+Metric                 gpt-4o-mini  llama-3.1-8b  qwq-32b
+---------------------  -----------  ------------  -------
+Pass rate              92%          <span class="text-[#27c93f]">99%</span>           <span class="text-[#ff5f56]">39%</span>
+Score · judge          1.00         <span class="text-[#27c93f]">1.00</span>          <span class="text-[#ff5f56]">0.77</span>
+Cost · total           $0.0006      <span class="text-[#27c93f]">$0.0003</span>       <span class="text-[#ff5f56]">$0.0033</span>
+Latency · p95          3859ms       <span class="text-[#27c93f]">3220ms</span>        <span class="text-[#ff5f56]">15837ms</span>
 
-<span class="text-pop-300">🐙 report written to results.json</span></pre>
+<span class="text-pop-300">🐙 report written to results/benchmark.json</span></pre>
       </CodeWindow>
     </div>
 

@@ -61,7 +61,7 @@ distinctly. This means one provider going down mid-run still yields a usable rep
 Run a subset of the suite's providers:
 
 ```bash
-promptopus run suite.yaml --providers gpt-4o-mini,llama-8b
+promptopus run suite.yaml --providers gpt-4o-mini,llama-3.1-8b
 ```
 
 Unknown names are rejected with the available list.
@@ -84,12 +84,12 @@ latency, token totals, and error count — plus every raw cell for drill-down. F
 After a run, a table is printed to stdout with best-in-row (green) and worst-in-row (red) highlighting:
 
 ```
-Metric                 gpt-4o-mini  llama-8b
----------------------  -----------  --------
-Pass rate              100%         100%
-Score · judge          0.96         0.99
-Cost · total           $0.0005      $0.0002
-Latency · p95          2436ms       6880ms
+Metric                 gpt-4o-mini  llama-3.1-8b  qwq-32b
+---------------------  -----------  ------------  -------
+Pass rate              92%          99%           39%
+Score · judge          1.00         1.00          0.77
+Cost · total           $0.0006      $0.0003       $0.0033
+Latency · p95          3859ms       3220ms        15837ms
 ```
 
 ## Environment & keys

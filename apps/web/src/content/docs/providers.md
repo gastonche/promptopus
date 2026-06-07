@@ -55,7 +55,7 @@ Any endpoint that speaks the OpenAI Chat Completions API: a local server (Ollama
 **Cloudflare Workers AI** via its OpenAI-compatible gateway. A base URL is **required**.
 
 ```yaml
-- name: llama-8b
+- name: llama-3.1-8b
   kind: openai-compat
   model: 'workers-ai/@cf/meta/llama-3.1-8b-instruct'
   baseUrlEnv: CF_AI_BASE_URL
@@ -117,7 +117,7 @@ export const PRICING: Record<string, ModelPricing> = {
 A suite can define many providers; run only some with `--providers`:
 
 ```bash
-promptopus run suite.yaml --providers gpt-4o-mini,llama-8b
+promptopus run suite.yaml --providers gpt-4o-mini,llama-3.1-8b
 ```
 
 Next: [Graders](/docs/graders).

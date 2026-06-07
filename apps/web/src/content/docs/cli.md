@@ -52,10 +52,10 @@ promptopus run <suite> [options]
 
 ```bash
 # full run
-promptopus run suites/readaloud-summarizer.yaml --out results/results.json
+promptopus run suites/readaloud-benchmark.yaml --out results/benchmark.json
 
 # subset, higher concurrency, more retries
-promptopus run suite.yaml -p gpt-4o-mini,llama-8b -c 8 -r 3
+promptopus run suite.yaml -p gpt-4o-mini,llama-3.1-8b -c 8 -r 3
 ```
 
 **Exit behavior.** A configuration error (bad YAML, schema violation, missing key, unknown provider)
