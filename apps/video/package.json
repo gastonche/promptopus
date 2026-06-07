@@ -1,0 +1,27 @@
+{
+  "name": "@promptopus/video",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "music": "node scripts/gen-music.mjs",
+    "studio": "remotion studio",
+    "render": "node scripts/gen-music.mjs && remotion render Speedrun out/promptopus-teaser.mp4 --concurrency=4",
+    "still": "remotion still Speedrun out/still.png",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.473",
+    "@remotion/google-fonts": "4.0.473",
+    "@remotion/media": "4.0.473",
+    "@remotion/shapes": "4.0.473",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "4.0.473"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.9.3"
+  }
+}
